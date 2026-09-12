@@ -9,6 +9,8 @@
 <main class="game-screen">
   <section id="home" class="home" aria-labelledby="home-title">
     <a class="brand" href="#home">DATTE<span>BAYO</span><b>忍</b></a>
+    <button id="music-toggle" class="quiet music-toggle" aria-expanded="false" aria-controls="music-panel">♫ Homepage music</button>
+    <div id="music-panel" class="music-panel" hidden></div>
     <div class="home-title"><p>NINJA ACADEMY</p><h1 id="home-title">DATTE<span>BAYO!</span></h1><span class="home-subtitle">Choose your ninja way.</span></div>
     <nav class="mode-list" aria-label="Game modes">
       <button class="mode" disabled><strong>Single Player</strong><small>Coming soon</small></button>
@@ -34,10 +36,10 @@
     </section>
     <section class="character-panel" aria-label="Your shinobi">
       <div id="arena" class="arena">
-        <div class="arena-toolbar"><div class="character-options" role="group" aria-label="Select your character"><button data-character="naruto" aria-pressed="false">Naruto</button><button data-character="sasuke" aria-pressed="true">Sasuke</button></div></div>
+        <div class="arena-toolbar"><div class="character-options" role="group" aria-label="Select your character"><button data-character="naruto" aria-pressed="false">Naruto</button><button data-character="sasuke" aria-pressed="true">Sasuke</button></div><button class="quiet" id="sound-toggle" aria-pressed="false">Enable sound</button></div>
         <div class="arena-caption"><p id="character-name">SASUKE UCHIHA</p><h2 id="action-label">Ready to train.</h2><p id="action-hint" class="sr-only">Complete all three signs to release your jutsu.</p></div>
         <div class="sprite-space"><img id="sprite" alt="Sasuke in a ready stance"><div id="jutsu-effect" class="jutsu-effect" aria-hidden="true"></div></div>
-        <div class="arena-footer"><p id="instruction" role="status">Starting your camera…</p><span id="completed-count">0 jutsu performed</span></div>
+        <div class="arena-footer"><p id="instruction" role="status">Starting your camera…</p><span id="sound-status" role="status"></span><span id="completed-count">0 jutsu performed</span></div>
       </div>
     </section>
   </section>

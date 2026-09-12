@@ -1,8 +1,10 @@
+import { GameAudio } from './game-audio.js';
+import './home-music.js';
 import { buildTensor, classifyScores } from './probe-core.js';
 import { JUTSU, newPractice, detectSign } from './practice-core.js';
 const $ = id => document.getElementById(id);
 const ASSETS = 'https://raw.githubusercontent.com/bunkerapps/Jutsu-Hero/10c5a914f9f14b4427d988d253048bf0fae8eb52/public/assets/';
-const FILES = { ox:'Ushi.jpg', hare:'U.jpg', monkey:'Saru.jpg', serpent:'Mi.jpg', ram:'Hitsuji.jpg', tiger:'Tora.jpg' };
+const FILES = { rat:'Ne.jpg', ox:'Ushi.jpg', tiger:'Tora.jpg', hare:'U.jpg', dragon:'Tatsu.jpg', serpent:'Mi.jpg', horse:'Uma.jpg', ram:'Hitsuji.jpg', monkey:'Saru.jpg', bird:'Tori.jpg', dog:'Inu.jpg', boar:'I.jpg' };
 const NAMES = { sasuke:'Sasuke Uchiha', naruto:'Naruto Uzumaki' };
 let character = 'sasuke';
 let state = newPractice();
@@ -18,6 +20,23 @@ let total = 0;
 let busy = false;
 let cameraWanted = false;
 let selectionRevision = 0;
+const sound = new GameAudio(updateSoundUi);
+function updateSoundUi() {
+  $('sound-toggle').textContent = sound.muted ? 'Sound off' : sound.ready ? 'Sound on' : 'Enable sound';
+  $('sound-toggle').setAttribute('aria-pressed', String(!sound.muted && sound.ready));
+}
+function unlockSound(event) {
+  if (event?.target?.closest?.('#sound-toggle')) return;
+  try { sound.unlock(); sound.load(selected().voice); } catch { $('sound-status').textContent = 'Audio unavailable in this browser.'; }
+}
+document.addEventListener('pointerdown', unlockSound, { capture: true });
+document.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') unlockSound(event); }, { capture: true });
+$('sound-toggle').addEventListener('click', () => {
+  try {
+    if (!sound.context || (!sound.muted && !sound.ready)) sound.unlock(); else sound.toggle();
+    sound.load(selected().voice);
+  } catch { $('sound-status').textContent = 'Audio unavailable in this browser.'; }
+});
 
 function showError(text = '') { $('error').textContent = text; $('error').hidden = !text; }
 function selected() { return JUTSU[$('jutsu').value]; }
@@ -46,10 +65,13 @@ function updateSigns() {
 }
 function resetPractice() {
   selectionRevision++;
+  sound.cancel();
   running = Boolean(stream);
   state = newPractice();
   clearTimeout(animationTimer);
-  $('arena').classList.remove('casting','fireball');
+  $('arena').classList.remove('casting','fireball','earth','water','clone','lightning');
+  $('sound-status').textContent = selected().voice ? `${selected().speaker} callout · 3-sign training` : `${selected().speaker} · 3-sign training`;
+  sound.load(selected().voice);
   $('action-label').textContent = 'Ready to train.';
   $('action-hint').textContent = 'Complete all three signs to release your jutsu.';
   $('instruction').textContent = stream ? `Hold ${selected().signs[0]} until the card fills, then follow the next sign.` : 'Waiting for your camera…';
@@ -63,7 +85,9 @@ function setCharacter(name) {
   document.querySelectorAll('[data-character]').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.character === name)));
   resetPractice();
 }
-function castJutsu() {
+async function castJutsu() {
+  const revision = selectionRevision;
+  const started = performance.now();
   running = false;
   total++;
   $('completed-count').textContent = `${total} jutsu performed`;
@@ -71,14 +95,19 @@ function castJutsu() {
   $('action-label').textContent = `${selected().name}!`;
   $('action-hint').textContent = `${NAMES[character]} releases the jutsu.`;
   $('arena').classList.add('casting');
-  $('arena').classList.toggle('fireball',$('jutsu').value === 'fireball');
-  animationTimer = setTimeout(resetPractice,1800);
+  $('arena').classList.add(selected().element);
+  const outcome = await sound.complete(selected().voice);
+  if (revision !== selectionRevision) return;
+  if (outcome.missing) $('sound-status').textContent = selected().voice ? 'Callout unavailable. Try again.' : selected().speaker;
+  if (outcome.blocked) $('sound-status').textContent = 'Tap Enable sound to hear jutsu.';
+  animationTimer = setTimeout(resetPractice, Math.max(0, 1800 - (performance.now() - started)));
 }
 function acceptPrediction(label, score, now, revision) {
   if (!running || revision !== selectionRevision) return;
   const oldIndex = state.index;
   state = detectSign(state,{label,score,now},selected().signs);
   updateSigns();
+  if (state.index !== oldIndex) sound.weave();
   if (state.completed) castJutsu();
   else if (state.index !== oldIndex) $('instruction').textContent = `Good. Now hold ${selected().signs[state.index]}.`;
 }
@@ -205,6 +234,7 @@ window.addEventListener('hashchange',route);
 window.addEventListener('pagehide',stopCamera);
 document.addEventListener('visibilitychange',() => { if(document.hidden) stopCamera(); });
 $('sprite').addEventListener('error',() => showError('The character image could not load. Reload the page to try again.'));
+$('jutsu').replaceChildren(...Object.entries(JUTSU).map(([id, jutsu]) => new Option(`${jutsu.name} · ${jutsu.speaker}`, id)));
 setCharacter(character);
 renderSigns();
 route();

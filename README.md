@@ -4,7 +4,7 @@ The homepage offers four modes. Practice Mode is playable; Single Player, Multi 
 
 ## Practice Mode
 
-Open the homepage and choose Practice Mode. Choose Chidori or Fireball Jutsu and Naruto or Sasuke, allow camera access when prompted. The camera and recognition start automatically upon entering Practice Mode. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit and automatically starts a fresh sequence after each jutsu animation. The combinations are abbreviated training versions, not full canonical sequences.
+Open the homepage and choose Practice Mode. Choose a jutsu and Naruto or Sasuke, allow camera access when prompted. The camera and recognition start automatically upon entering Practice Mode. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit and automatically starts a fresh sequence after each jutsu animation and callout. The combinations are abbreviated training versions, not full canonical sequences.
 
 Changing a jutsu or character resets the current sequence. Leaving practice, hiding the tab, or stopping the camera stops its tracks and resets the sequence. No camera frames are recorded or uploaded.
 
@@ -44,3 +44,9 @@ The probe code in this repository has no production or game license grant. It is
 ## Screen layout
 
 Home and Practice Mode fill the browser viewport with no page or panel scrolling. Practice uses 40% camera, 20% hand signs, and 40% character stage. The camera uses `object-fit: contain` so its full frame scales without distortion or cropping. Mobile browsers use the dynamic viewport height to stay within the visible screen. The original standalone diagnostics also fit to one screen.
+
+## Audio
+
+Homepage music uses the user-selected Afternoon of Konoha YouTube player. Tap Homepage music to play; entering practice stops it. Practice unlocks audio on a click/key interaction. Sound on/off is available in the character stage. Successful signs play a weave cue; the completed sequence plays a bell followed by the sourced callout, without overlapping the next round.
+
+The current catalog contains Chidori (Sasuke), Fireball (Sasuke), Earth Wall (Kakashi), and Shadow Clone (Naruto) voice clips. Water Dragon is playable but its Kisame voice remains pending. An exact Kakashi Chidori clip is also unverified. The three-sign Shadow Clone combination is a gameplay adaptation because its canonical clone seal is unsupported. See `assets/audio/SOURCES.md` for the complete sourced catalog and hand-sign references.
