@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { JUTSU, newPractice, detectSign } from '../src/practice-core.js';
-const signs = JUTSU.chidori.signs;
+import { newPractice, detectSign } from '../src/practice-core.js';
+import { readFileSync } from 'node:fs';
+const catalog = JSON.parse(readFileSync(new URL('../data/jutsus.json', import.meta.url)));
+const signs = catalog.jutsus.find(jutsu => jutsu.id === 'chidori').handSigns;
 const read = (state,label,now,score=.9) => detectSign(state,{label,score,now},signs);
 test('requires continuous correct holds in order and completes only after all three signs',() => {
   let state = newPractice();

@@ -45,8 +45,22 @@ The probe code in this repository has no production or game license grant. It is
 
 Home and Practice Mode fill the browser viewport with no page or panel scrolling. Practice uses 40% camera, 20% hand signs, and 40% character stage. The camera uses `object-fit: contain` so its full frame scales without distortion or cropping. Mobile browsers use the dynamic viewport height to stay within the visible screen. The original standalone diagnostics also fit to one screen.
 
-## Audio
+## Jutsu catalog
 
-Homepage music uses the user-selected Afternoon of Konoha YouTube player. Tap Homepage music to play; entering practice stops it. Practice unlocks audio on a click/key interaction. Sound on/off is available in the character stage. Successful signs play a weave cue; the completed sequence plays a bell followed by the sourced callout, without overlapping the next round.
+Edit `data/jutsus.json` to add or change jutsu. The practice menu loads this file directly. Each entry has a stable `id`, a display `name`, an elemental `type`, exactly three `handSigns`, and a `completionSoundtrack` path or `null`. All sequences are simplified gameplay combinations, not a claim about canonical hand seals. The unnamed second water entry is intentionally omitted.
 
-The current catalog contains Chidori (Sasuke), Fireball (Sasuke), Earth Wall (Kakashi), and Shadow Clone (Naruto) voice clips. Water Dragon is playable but its Kisame voice remains pending. An exact Kakashi Chidori clip is also unverified. The three-sign Shadow Clone combination is a gameplay adaptation because its canonical clone seal is unsupported. See `assets/audio/SOURCES.md` for the complete sourced catalog and hand-sign references.
+Example audio assignment after adding your file:
+
+```json
+"completionSoundtrack": "./assets/audio/emotion-waves.mp3"
+```
+
+Existing Chidori and Fireball clips remain configured; other requested jutsu await your recordings. The build checks unique IDs, supported elements/signs, and referenced audio files.
+
+## Homepage music
+
+The game uses an invisible HTML audio element, with no YouTube player. Set `homepageMusic.src` in `data/audio.json` to a local audio asset, such as `./assets/audio/homepage.mp3`. It is currently `null`: the previous YouTube URL is not a directly playable audio file. Once a file is supplied, playback is attempted automatically on home, retried on first interaction if blocked by autoplay policy, and paused in practice or when the page is hidden. The music toggle controls muting.
+
+## Practice audio
+
+Every correct sign triggers a weave sound. Completing three signs triggers a bell, then the configured completion clip. Null clips skip the callout while retaining both game cues. Changes of jutsu, character, or mode cancel pending playback. Historical source credits for existing files remain in `assets/audio/SOURCES.md`.

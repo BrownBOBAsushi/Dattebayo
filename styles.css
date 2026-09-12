@@ -128,30 +128,8 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }
 .music-toggle { position: absolute; z-index: 5; top: 3vh; right: 3vw; }
-.music-panel { position: absolute; z-index: 4; left: 7vw; bottom: 8vh; width: 260px; background: #142223; border: 1px solid #d6b465; border-radius: 4px; overflow: clip; }
-.music-panel iframe { display: block; width: 100%; height: 200px; border: 0; }
-.music-panel a { display: block; font-size: 11px; padding: 5px; text-align: center; }
-.home.with-music .home-title { top: 15%; }
-.home.with-music .home-title h1 { font-size: clamp(30px,7vmin,72px); }
-#sound-status { color: #ffdc91; white-space: normal; max-width: 40%; }
-#sound-status:empty { display: none; }
-@media (max-aspect-ratio: 3/4) {
-  .home.with-music .home-title { top: 10%; }
-  .home.with-music .home-title h1 { font-size: 10vmin; }
-  .home.with-music .home-subtitle { display: none; }
-  .home.with-music .music-panel { width: 220px; left: calc(50% - 110px); top: 23%; bottom: auto; }
-  .home.with-music .mode-list { top: calc(23% + 235px); height: calc(70% - 235px); gap: 5px; }
-  .home.with-music .mode strong { font-size: 3.6vmin; }
-  .home.with-music .mode small { font-size: 2.5vmin; }
-  .arena-footer #sound-status { display: block; font-size: 11px; max-width: 45%; }
-}
-@media (max-height: 600px) and (min-aspect-ratio: 3/4) {
-  .home.with-music .home-title { top: 14%; }
-  .home.with-music .home-title h1 { font-size: 5vmin; }
-  .home.with-music .home-title h1 span { display: inline; }
-  .home.with-music .home-subtitle, .home.with-music .home-title p { display: none; }
-  .music-panel { bottom: 6vh; width: 220px; }
-}
 .casting.earth .jutsu-effect { background: radial-gradient(circle,#ffe4a0,#d1a252bb 35%,transparent 70%); }
 .casting.water .jutsu-effect { background: radial-gradient(circle,#c8ffff,#228de6bb 35%,transparent 70%); }
 .casting.clone .jutsu-effect { background: radial-gradient(circle,#fff,#ddd9 35%,transparent 70%); }
+
+.casting.wind .jutsu-effect { background: radial-gradient(circle,#f0fff7,#80e6ae99 35%,transparent 70%); }

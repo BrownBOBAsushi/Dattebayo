@@ -1,31 +1,46 @@
-// Use the supplied YouTube track in its visible official player.
-const home = document.getElementById('home');
-const panel = document.getElementById('music-panel');
+// A direct audio file is configured in data/audio.json; no video or iframe.
 const button = document.getElementById('music-toggle');
-let wanted = false;
-export function stopMusic() {
-  wanted = false;
-  panel.replaceChildren(); panel.hidden = true;
-  home.classList.remove('with-music');
-  button.textContent = '♫ Homepage music';
-  button.setAttribute('aria-expanded', 'false');
+const music = new Audio();
+music.preload = 'auto';
+let configured = false;
+let enabled = true;
+const onHome = () => location.hash !== '#practice' && !document.hidden;
+function updateLabel() {
+  button.disabled = !configured;
+  button.textContent = !configured ? 'Music pending audio' : !enabled ? 'Music off' : music.paused ? 'Enable music' : 'Music on';
+  button.setAttribute('aria-pressed', String(configured && enabled && !music.paused));
 }
+async function syncMusic() {
+  if (!configured || !enabled || !onHome()) { music.pause(); updateLabel(); return; }
+  try { await music.play(); } catch { /* Autoplay will retry on the next user gesture. */ }
+  if (!enabled || !onHome()) music.pause();
+  updateLabel();
+}
+export function stopMusic() { music.pause(); updateLabel(); }
 button.addEventListener('click', () => {
-  if (wanted) { stopMusic(); return; }
-  wanted = true;
-  const frame = document.createElement('iframe');
-  frame.src = 'https://www.youtube.com/embed/qAGvQDoL5s4?autoplay=1&loop=1&playlist=qAGvQDoL5s4&playsinline=1';
-  frame.title = 'Naruto — Afternoon of Konoha';
-  frame.allow = 'autoplay; encrypted-media; picture-in-picture';
-  frame.referrerPolicy = 'strict-origin-when-cross-origin';
-  const link = document.createElement('a');
-  link.href = 'https://www.youtube.com/watch?v=qAGvQDoL5s4';
-  link.target = '_blank'; link.rel = 'noopener';
-  link.textContent = 'Afternoon of Konoha · Open on YouTube ↗';
-  panel.replaceChildren(frame, link); panel.hidden = false;
-  home.classList.add('with-music');
-  button.textContent = '♫ Stop music'; button.setAttribute('aria-expanded', 'true');
+  if (music.paused && enabled) syncMusic();
+  else { enabled = !enabled; syncMusic(); }
 });
-window.addEventListener('hashchange', () => { if (location.hash === '#practice') stopMusic(); });
+for (const event of ['pointerdown','keydown']) document.addEventListener(event, e => {
+  if (e.target === button) return;
+  if (e.target?.closest?.('a[href="#practice"]')) return;
+  if (enabled && music.paused) syncMusic();
+}, { capture: true });
+window.addEventListener('hashchange', syncMusic);
 window.addEventListener('pagehide', stopMusic);
-document.addEventListener('visibilitychange', () => { if (document.hidden) stopMusic(); });
+document.addEventListener('visibilitychange', syncMusic);
+music.addEventListener('error', () => { button.textContent = 'Music unavailable'; });
+fetch('./data/audio.json').then(response => {
+  if (!response.ok) throw new Error('Audio configuration unavailable');
+  return response.json();
+}).then(({ homepageMusic }) => {
+  if (homepageMusic.src) {
+    configured = true;
+    music.src = homepageMusic.src;
+    music.loop = homepageMusic.loop !== false;
+    music.volume = Math.max(0, Math.min(1, homepageMusic.volume ?? .35));
+    enabled = homepageMusic.autoplay !== false;
+  }
+  syncMusic();
+}).catch(() => { button.disabled = true; button.textContent = 'Music configuration unavailable'; });
+updateLabel();

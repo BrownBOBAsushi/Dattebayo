@@ -1,8 +1,16 @@
 import { GameAudio } from './game-audio.js';
 import './home-music.js';
 import { buildTensor, classifyScores } from './probe-core.js';
-import { JUTSU, newPractice, detectSign } from './practice-core.js';
+import { newPractice, detectSign } from './practice-core.js';
 const $ = id => document.getElementById(id);
+const catalogResponse = await fetch('./data/jutsus.json');
+if (!catalogResponse.ok) throw new Error('Could not load the jutsu catalog.');
+const catalog = await catalogResponse.json();
+const JUTSU = Object.fromEntries(catalog.jutsus.map(jutsu => [jutsu.id, {
+  name: jutsu.name, signs: jutsu.handSigns, voice: jutsu.completionSoundtrack,
+  speaker: jutsu.completionSoundtrack ? 'Completion audio ready' : 'Completion audio pending',
+  type: jutsu.type, element: jutsu.type === 'fire' ? 'fireball' : jutsu.type,
+}]));
 const ASSETS = 'https://raw.githubusercontent.com/bunkerapps/Jutsu-Hero/10c5a914f9f14b4427d988d253048bf0fae8eb52/public/assets/';
 const FILES = { rat:'Ne.jpg', ox:'Ushi.jpg', tiger:'Tora.jpg', hare:'U.jpg', dragon:'Tatsu.jpg', serpent:'Mi.jpg', horse:'Uma.jpg', ram:'Hitsuji.jpg', monkey:'Saru.jpg', bird:'Tori.jpg', dog:'Inu.jpg', boar:'I.jpg' };
 const NAMES = { sasuke:'Sasuke Uchiha', naruto:'Naruto Uzumaki' };
@@ -69,7 +77,7 @@ function resetPractice() {
   running = Boolean(stream);
   state = newPractice();
   clearTimeout(animationTimer);
-  $('arena').classList.remove('casting','fireball','earth','water','clone','lightning');
+  $('arena').classList.remove('casting','fireball','earth','water','clone','lightning','wind');
   $('sound-status').textContent = selected().voice ? `${selected().speaker} callout · 3-sign training` : `${selected().speaker} · 3-sign training`;
   sound.load(selected().voice);
   $('action-label').textContent = 'Ready to train.';
@@ -234,7 +242,7 @@ window.addEventListener('hashchange',route);
 window.addEventListener('pagehide',stopCamera);
 document.addEventListener('visibilitychange',() => { if(document.hidden) stopCamera(); });
 $('sprite').addEventListener('error',() => showError('The character image could not load. Reload the page to try again.'));
-$('jutsu').replaceChildren(...Object.entries(JUTSU).map(([id, jutsu]) => new Option(`${jutsu.name} · ${jutsu.speaker}`, id)));
+$('jutsu').replaceChildren(...Object.entries(JUTSU).map(([id, jutsu]) => new Option(`${jutsu.type[0].toUpperCase() + jutsu.type.slice(1)} · ${jutsu.name}`, id)));
 setCharacter(character);
 renderSigns();
 route();
