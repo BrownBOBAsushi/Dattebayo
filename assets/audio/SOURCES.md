@@ -20,7 +20,7 @@ Naruto media belongs to its respective owners, including Masashi Kishimoto / Shu
 
 ## Homepage music
 
-The user-selected “Naruto — Afternoon of Konoha” is streamed in the visible official YouTube player, with its own controls, after pressing Homepage music. It is not downloaded or redistributed: https://www.youtube.com/watch?v=qAGvQDoL5s4 . Music stops when entering Practice Mode or leaving the tab. Browsers may require the player play button before audible playback.
+The user supplied `Naruto - Afternoon of Konoha.mp3`, copied unchanged to `homepage.mp3`. It plays through a native audio element configured in `data/audio.json`, with no video player. Playback loops at 35% volume on the homepage, pauses in Practice Mode or when the tab is hidden, and resumes on return. Browser autoplay restrictions may require a first interaction. Original user reference: https://www.youtube.com/watch?v=qAGvQDoL5s4 .
 
 ## Training hand signs
 

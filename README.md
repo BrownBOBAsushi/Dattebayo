@@ -59,7 +59,7 @@ Existing Chidori and Fireball clips remain configured; other requested jutsu awa
 
 ## Homepage music
 
-The game uses an invisible HTML audio element, with no YouTube player. Set `homepageMusic.src` in `data/audio.json` to a local audio asset, such as `./assets/audio/homepage.mp3`. It is currently `null`: the previous YouTube URL is not a directly playable audio file. Once a file is supplied, playback is attempted automatically on home, retried on first interaction if blocked by autoplay policy, and paused in practice or when the page is hidden. The music toggle controls muting.
+The game uses an invisible HTML audio element, with no YouTube player. Set `homepageMusic.src` in `data/audio.json` to a local audio asset, such as `./assets/audio/homepage.mp3`. The supplied Afternoon of Konoha MP3 is configured at `./assets/audio/homepage.mp3`. Playback is attempted automatically on home, retried on first interaction if blocked by autoplay policy, and paused in practice or when the page is hidden. The music toggle controls muting.
 
 ## Practice audio
 
