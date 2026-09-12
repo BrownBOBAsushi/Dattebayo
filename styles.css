@@ -1,8 +1,129 @@
-:root{color-scheme:dark;font-family:Inter,Arial,sans-serif;color:#f4f3ee;background:#101216;--muted:#9da3ae;--line:#2b3039;--orange:#ff7638;--panel:#181c23}*{box-sizing:border-box}body{margin:0}button,a,select{-webkit-tap-highlight-color:transparent}button,select{font:inherit}button,a{touch-action:manipulation}a{color:inherit;text-decoration:none}button{cursor:pointer}button:disabled{cursor:not-allowed}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #ffae6f;outline-offset:5px}[hidden]{display:none!important}.topbar{min-height:86px;border-bottom:1px solid var(--line);padding:20px 5%;display:flex;align-items:center;gap:32px}.brand{font-size:22px;font-weight:950;letter-spacing:-1px}.brand span{color:var(--orange)}.brand b{font-size:20px;margin-left:14px;border-left:1px solid var(--line);padding-left:14px}.top-note{font-size:12px;letter-spacing:2px;color:var(--muted)}.diagnostics{margin-left:auto;font-size:14px;color:var(--muted)}main{max-width:1120px;margin:auto;padding:0 28px}.home{min-height:calc(100svh - 86px);display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-content:center;padding:70px 0 30px}.eyebrow{font-size:12px;letter-spacing:2px;color:var(--orange);font-weight:800}.home h1{font-size:clamp(54px,6.6vw,90px);line-height:1.02;letter-spacing:-5px;margin:25px 0}.home h1 em{font-style:normal;color:var(--orange)}.home-heading>p:last-child{font-size:17px;line-height:1.7;color:var(--muted);max-width:310px}.mode-list{display:flex;flex-direction:column;gap:12px}.mode{border:1px solid var(--line);background:#171b21;padding:23px;display:flex;gap:23px;text-align:left;align-items:center;color:#8e95a1;min-height:99px}.mode-number{font-size:13px;font-family:monospace}.mode strong{display:block;font-size:23px;font-weight:700;letter-spacing:-.5px}.mode small{display:block;font-size:14px;margin-top:8px;color:var(--muted)}.mode>span:last-child{margin-left:auto;font-size:25px}.mode.available{background:var(--orange);border-color:var(--orange);color:#16120f;transition:transform .2s,background .2s}.mode.available small{color:#402514}.mode.available:hover{transform:translateX(5px);background:#ff8b55}.home-footer{grid-column:1/-1;margin-top:50px;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;color:var(--muted);font-size:13px;gap:16px}.home-footer span:first-child{letter-spacing:2px}.practice{max-width:920px;margin:0 auto;padding:30px 0}.practice-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:25px;gap:24px}.back{color:var(--muted);font-size:14px}.practice h1{font-size:34px;letter-spacing:-1px;margin:10px 0 0}.practice h1 span{font-weight:400;color:var(--muted)}.jutsu-picker{font-size:12px;letter-spacing:1.4px;display:grid;gap:8px;color:var(--muted)}select{background:#20252e;border:1px solid #424955;color:#fff;border-radius:5px;padding:10px 40px 10px 12px;font-size:16px;min-width:210px}.camera-panel,.sequence-panel,.character-panel{background:var(--panel);border:1px solid var(--line);margin-bottom:16px;border-radius:8px;overflow:hidden}.section-label{display:flex;justify-content:space-between;align-items:center;gap:15px;min-height:48px;padding:12px 20px;font-size:12px;letter-spacing:1.3px;color:var(--muted);border-bottom:1px solid var(--line)}.section-label b{color:var(--orange);margin-right:10px}.section-label>span:last-child{letter-spacing:0;font-size:14px}.camera-wrap{height:270px;position:relative;background:#0b0e12;overflow:hidden}.camera-wrap video{width:100%;height:100%;object-fit:contain;transform:scaleX(-1)}#camera-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at center,#222a34,#0e1117 70%);text-align:center;padding:20px}.camera-symbol{font-size:34px;line-height:45px;color:var(--orange);margin-bottom:8px}#camera-placeholder strong{font-size:20px}#camera-placeholder p{color:var(--muted);font-size:14px;margin:10px 0 20px}.primary{background:var(--orange);color:#1c130e;border:0;border-radius:5px;padding:12px 20px;font-size:14px;font-weight:750;min-height:44px;white-space:nowrap}.primary:hover{background:#ff945f}.primary:disabled{background:#303641;color:#99a0aa}.helper,.error{font-size:13px;color:var(--muted);padding:0 20px;line-height:1.5}.error{color:#ff9b92}.live-overlay{position:absolute;bottom:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;gap:12px}.live-overlay>span{background:#111820e8;padding:9px 14px;border-radius:4px;font-size:14px}.quiet{background:#151a22e8;color:#fff;border:1px solid #525967;border-radius:4px;padding:9px 14px;font-size:14px}.sequence-heading{display:flex;align-items:center;justify-content:space-between;padding:17px 20px 12px;gap:15px}.sequence-heading h2{font-size:21px;margin:0}.sequence-heading>span{font-size:13px;color:var(--muted)}.signs{list-style:none;margin:0;padding:0 20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.sign-card{background:#11151b;border:1px solid #343b46;border-radius:6px;overflow:hidden;position:relative;opacity:.6;transition:border-color .2s,opacity .2s}.sign-card.active{border-color:var(--orange);opacity:1;box-shadow:0 0 0 1px var(--orange)}.sign-card.done{border-color:#58c7a2;opacity:1}.sign-image{height:116px;background:#e6e5e2;display:flex;justify-content:center;overflow:hidden}.sign-image img{width:100%;height:100%;object-fit:contain}.sign-meta{display:flex;align-items:center;gap:9px;padding:10px 12px;font-size:16px;text-transform:capitalize}.sign-meta small{color:var(--muted);font-size:12px}.sign-meta .sign-state{margin-left:auto;font-size:12px;color:var(--muted);text-transform:none}.active .sign-state{color:var(--orange)}.done .sign-state{color:#73dbb8}.sign-progress{height:4px;background:#303641}.sign-progress span{display:block;height:100%;width:0;background:var(--orange);transition:width .07s linear}.done .sign-progress span{background:#58c7a2;width:100%}.sequence-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px 20px}.sequence-bottom p{font-size:14px;color:#c1c6ce;margin:0;line-height:1.5}.character-options{display:flex;gap:4px}.character-options button{border:1px solid transparent;border-radius:4px;background:transparent;color:var(--muted);font-size:14px;padding:6px 12px}.character-options button[aria-pressed=true]{background:#303846;border-color:#4d586a;color:#fff}.arena{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:205px;padding:24px 40px;background:linear-gradient(0deg,#232a35 0 19%,transparent 19%),radial-gradient(ellipse at 80% 80%,#293649,#141923 70%);overflow:hidden}.arena-caption{z-index:2;max-width:55%}.arena-caption h2{margin:10px 0;font-size:25px}.arena-caption p:last-child{font-size:14px;color:var(--muted);line-height:1.5}.sprite-space{width:220px;height:160px;position:relative;display:grid;place-items:center;z-index:1}#sprite{height:145px;max-width:220px;object-fit:contain;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 10px 5px #0005)}.arena-marker{position:absolute;bottom:10px;left:20px;font-size:12px;letter-spacing:2px;color:#8a96aa}.jutsu-effect{position:absolute;inset:10%;opacity:0;border-radius:50%;background:radial-gradient(circle,#eefcff 0, #60d9ff88 20%,transparent 67%);filter:blur(6px)}.casting .sprite-space{animation:lunge 1.7s ease-in-out}.casting .jutsu-effect{animation:burst 1.7s ease-out}.casting.fireball .jutsu-effect{background:radial-gradient(circle,#fff3bb,#ff772ac9 30%,transparent 65%)}.casting .arena-caption h2{color:#93e7ff}.casting.fireball .arena-caption h2{color:#ff9a59}.practice-footer{display:flex;justify-content:space-between;gap:25px;font-size:13px;color:var(--muted);line-height:1.5} @keyframes lunge{0%,100%{transform:translateX(0)}25%{transform:translateX(-15px) scale(.96)}48%,65%{transform:translateX(45px) scale(1.1)}}@keyframes burst{0%,100%{opacity:0;transform:scale(.2)}35%{opacity:1;transform:scale(1.5)}65%{opacity:1;transform:translateX(65px) scale(2)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition:none!important}}@media(max-width:700px){.topbar{padding:18px 22px;min-height:74px}.top-note{display:none}.diagnostics{font-size:12px}.brand{font-size:19px}main{padding:0 18px}.home{grid-template-columns:1fr;gap:32px;padding-top:40px}.home h1{font-size:61px;letter-spacing:-3px}.home-heading>p:last-child{max-width:100%}.home-footer{margin-top:15px;flex-direction:column}.mode{padding:18px;min-height:85px}.practice-heading{align-items:start}.practice h1{font-size:27px}.jutsu-picker{max-width:45%}select{min-width:0;width:100%;padding-right:15px}.camera-wrap{height:250px}.signs{gap:9px;padding:0 12px}.sign-image{height:100px}.sign-meta{padding:8px;font-size:14px;flex-wrap:wrap;gap:5px}.sign-meta .sign-state{width:100%;margin-left:0}.sequence-heading{padding:16px 12px}.sequence-heading>span{font-size:12px}.sequence-bottom{padding:14px 12px;align-items:start}.section-label{padding:12px;font-size:11px;letter-spacing:1px}.arena{padding:20px;min-height:210px}.arena-caption{max-width:52%}.arena-caption h2{font-size:21px}.sprite-space{width:135px}#sprite{max-width:140px;height:130px}.practice-footer{flex-direction:column;gap:8px}.character-options button{padding:6px 8px}.section-label>span:last-child{font-size:12px}}@media(max-width:390px){.sequence-bottom{flex-direction:column}.practice-heading{flex-wrap:wrap}.jutsu-picker{max-width:100%;width:100%}.sign-image{height:85px}}
-/* Keep the camera, sign rail, and character close together while practicing. */
-.practice .camera-wrap{height:clamp(160px,22vh,240px)}
-.practice .sign-image{height:clamp(72px,11vh,116px)}
-.practice .arena{min-height:160px;padding-top:14px;padding-bottom:22px}
-.practice .sprite-space{height:125px}
-.practice #sprite{height:120px}
-@media(min-width:701px) and (max-height:900px){.topbar{min-height:64px;padding-top:14px;padding-bottom:14px}.practice{padding-top:16px}.practice-heading{margin-bottom:16px}.section-label{min-height:40px;padding-top:9px;padding-bottom:9px}.practice h1{font-size:28px}.sequence-heading{padding-top:12px;padding-bottom:10px}.sequence-bottom{padding-top:12px;padding-bottom:12px}.camera-panel,.sequence-panel,.character-panel{margin-bottom:10px}}
+:root {
+  color-scheme: dark;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: #fff6de;
+  background: #192323;
+  --orange: #ff852e;
+  --ink: #152323;
+}
+* { box-sizing: border-box; min-width: 0; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; }
+button, select { font: inherit; }
+button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+button:disabled { cursor: not-allowed; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #fff0aa; outline-offset: -3px; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.game-screen, .home, .practice { width: 100%; height: 100%; min-height: 0; overflow: clip; }
+.home, .practice { position: relative; background: url('./assets/academy.jpg') center center / cover no-repeat; }
+.home::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#101c2140,#10212105 40%,#101c21a6),linear-gradient(0deg,#101c21b0,transparent 35%); pointer-events: none; }
+.brand { position: absolute; left: 3vw; top: 3vh; font-size: clamp(14px,2.7vmin,24px); font-weight: 950; letter-spacing: -1px; text-shadow: 0 2px 3px #000; }
+.brand span { color: var(--orange); }
+.brand b { margin-left: 12px; color: #ffecb8; }
+.home-title { position: absolute; left: 7vw; top: 32%; transform: rotate(-4deg); text-shadow: 0 3px 0 #142427,0 6px 24px #000; }
+.home-title p { font-size: clamp(12px,2.5vmin,22px); letter-spacing: .22em; font-weight: 900; margin: 0 0 12px; }
+.home-title h1 { font-size: clamp(30px,8.5vmin,100px); font-style: italic; letter-spacing: -.065em; line-height: .95; margin: 0; color: #ffb33f; -webkit-text-stroke: 1px #2f251c; }
+.home-title h1 span { display: block; color: #ff7729; }
+.home-subtitle { display: block; margin-top: 18px; font-size: clamp(14px,2.5vmin,22px); font-weight: 700; }
+.mode-list { position: absolute; right: 7vw; top: 25%; width: min(35vw,410px); height: 53%; display: grid; grid-template-rows: repeat(4,minmax(0,1fr)); gap: clamp(6px,1.6vh,18px); }
+.mode { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 clamp(12px,2.5vw,30px); border: 2px solid #b2a47c; border-left: 6px solid #b2a47c; border-radius: 3px; background: #172b2bea; color: #e2dccb; box-shadow: 0 4px 0 #0a1616a0; }
+.mode strong { font-size: clamp(14px,2.8vmin,25px); }
+.mode small { font-size: clamp(10px,1.65vmin,13px); color: #b4bdaf; white-space: nowrap; }
+.mode.available { background: #f18c31; color: #202923; border-color: #ffdb8b; }
+.mode.available:hover { background: #ffac48; }
+.mode.available span { font-size: 24px; }
+.home-footer { position: absolute; left: 0; bottom: 3vh; width: 100%; margin: 0; text-align: center; font-size: clamp(10px,1.7vmin,14px); letter-spacing: .15em; }
+/* The three tracks consume the viewport exactly; controls are overlays within them. */
+.practice { display: grid; grid-template-rows: minmax(0,40%) minmax(0,20%) minmax(0,40%); }
+.practice > section { position: relative; width: 100%; height: 100%; min-height: 0; overflow: clip; }
+.camera-panel { background: #0b171be0; }
+.camera-wrap { position: absolute; inset: 0; }
+.camera-wrap video { display: block; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+.camera-toolbar, .arena-toolbar { position: absolute; z-index: 4; top: clamp(6px,1.5vh,16px); left: clamp(8px,2vw,24px); right: clamp(8px,2vw,24px); display: flex; align-items: center; gap: 12px; }
+.back, #camera-status, .quiet, select, .character-options { background: #142223e8; border: 1px solid #b4b58a60; border-radius: 4px; color: #fff6de; }
+.back, #camera-status { padding: 8px 12px; font-size: 14px; }
+#camera-status { font-size: 12px; }
+.jutsu-picker { margin-left: auto; }
+select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
+#camera-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+#camera-placeholder strong { font-size: clamp(16px,3vh,26px); }
+#camera-placeholder p { margin: 0; color: #c4cec8; font-size: 14px; }
+.primary { padding: 10px 18px; font-size: 14px; font-weight: 800; color: #17241e; background: var(--orange); border: 1px solid #ffd391; border-radius: 4px; white-space: nowrap; }
+.primary:hover { background: #ffae56; }
+.primary:disabled { background: #394640; color: #b5c0b5; border-color: #7c8b7740; }
+.camera-feedback { position: absolute; z-index: 3; bottom: 7px; left: 12px; right: 12px; text-align: center; pointer-events: none; }
+.camera-feedback p { margin: 0; font-size: 12px; line-height: 1.25; text-shadow: 0 1px 4px #000; }
+.camera-feedback .error { background: #4c1819f2; color: #ffe4de; padding: 6px; border-radius: 4px; }
+.camera-feedback:has(.error:not([hidden])) #camera-message { display: none; }
+.camera-panel:has(#live-overlay:not([hidden])) .camera-feedback { display: none; }
+.live-overlay { position: absolute; z-index: 4; left: 12px; right: 12px; bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.live-overlay span { background: #142223db; padding: 6px 10px; border-radius: 4px; font-size: 14px; }
+.quiet { padding: 6px 10px; font-size: 14px; }
+.sequence-panel { border-block: 2px solid #d6b465; background: #102425e8; }
+.signs { height: 100%; list-style: none; display: flex; align-items: stretch; justify-content: center; gap: clamp(6px,1vw,14px); margin: 0; padding: clamp(4px,1vh,10px) 10px; }
+.sign-card { position: relative; height: 100%; width: min(24vw,18vh); flex: 0 1 min(24vw,18vh); min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) clamp(20px,3.5vh,30px) 3px; border: 2px solid transparent; border-radius: 4px; background: #12201f; opacity: .65; overflow: clip; }
+.sign-card.active { border-color: #ffb44a; opacity: 1; }
+.sign-card.done { border-color: #99db84; opacity: 1; }
+.sign-image { min-height: 0; overflow: clip; }
+.sign-image img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.sign-meta { display: grid; place-items: center; font-size: clamp(12px,2vh,16px); text-transform: capitalize; }
+.sign-meta small, .sign-state { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.sign-progress { height: 3px; background: #314335; }
+.sign-progress span { display: block; height: 100%; width: 0; background: #ffb44a; transition: width 70ms linear; }
+.done .sign-progress span { background: #99db84; }
+.character-panel { background: linear-gradient(#12281d20,#10211855); }
+.arena { position: relative; width: 100%; height: 100%; overflow: clip; }
+.arena-toolbar { justify-content: space-between; }
+.character-options { display: flex; overflow: clip; }
+.character-options button { padding: 8px 14px; background: transparent; color: #e5e8d6; border: 0; font-size: 14px; }
+.character-options button[aria-pressed=true] { background: #ef9b3a; color: #14211c; font-weight: 800; }
+.arena-caption { position: absolute; z-index: 2; left: 5vw; top: 43%; max-width: 40%; text-shadow: 0 2px 4px #102015,0 0 10px #102015; }
+.arena-caption p { margin: 0 0 8px; font-size: clamp(10px,1.7vh,14px); letter-spacing: .13em; font-weight: 800; }
+.arena-caption h2 { margin: 0; font-size: clamp(16px,3.5vh,32px); }
+.sprite-space { position: absolute; width: 40%; height: 72%; left: 45%; bottom: 8%; display: grid; place-items: center; }
+#sprite { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 5px #11221890); z-index: 2; }
+.arena-footer { position: absolute; z-index: 3; bottom: 5px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: end; gap: 12px; font-size: 12px; text-shadow: 0 1px 4px #000; }
+.arena-footer p { margin: 0; max-width: 75%; }
+.arena-footer span { white-space: nowrap; }
+.jutsu-effect { position: absolute; inset: 5%; opacity: 0; border-radius: 50%; background: radial-gradient(circle,#eefcff 0,#60d9ff88 20%,transparent 67%); filter: blur(6px); }
+.casting .sprite-space { animation: lunge 1.7s ease-in-out; }
+.casting .jutsu-effect { animation: burst 1.7s ease-out; }
+.casting.fireball .jutsu-effect { background: radial-gradient(circle,#fff3bb,#ff772ac9 30%,transparent 65%); }
+.casting .arena-caption h2 { color: #a5edff; }
+.casting.fireball .arena-caption h2 { color: #ffd58b; }
+@keyframes lunge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3vw) scale(.96); } 48%,65% { transform: translateX(7vw) scale(1.08); } }
+@keyframes burst { 0%,100% { opacity: 0; transform: scale(.2); } 35% { opacity: 1; transform: scale(1.3); } 65% { opacity: 1; transform: translateX(4vw) scale(1.7); } }
+@media (max-aspect-ratio: 3/4) {
+  .home-title { top: 13%; left: 10%; }
+  .home-title h1 { font-size: 16vmin; }
+  .home-title h1 span { display: inline; }
+  .home-title p { font-size: 3vmin; }
+  .home-subtitle { font-size: 3.5vmin; }
+  .mode-list { top: 42%; height: 45%; right: 10%; width: 80%; }
+  .mode strong { font-size: 4.5vmin; }
+  .mode small { font-size: 3vmin; }
+  .camera-toolbar { gap: 6px; }
+  #camera-status { display: none; }
+  .arena-caption { left: 4vw; max-width: 44%; }
+  .sprite-space { width: 52%; left: 44%; height: 68%; bottom: 13%; }
+  .arena-footer span { display: none; }
+  .arena-footer p { max-width: 100%; }
+  .character-options button { padding-inline: 10px; }
+  .primary { padding-inline: 12px; }
+}
+@media (max-height: 500px) {
+  .camera-toolbar, .arena-toolbar { top: 4px; }
+  .back, select, .primary, .character-options button { padding: 5px 9px; font-size: 12px; }
+  #camera-status, #camera-placeholder p { display: none; }
+  #camera-placeholder { gap: 5px; }
+  #camera-placeholder strong { font-size: 14px; }
+  .camera-feedback p, .arena-footer { font-size: 10px; }
+  .arena-caption { top: 38%; }
+  .arena-caption p { margin-bottom: 3px; }
+  .sign-meta { font-size: 11px; }
+  .sprite-space { height: 68%; bottom: 10%; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition: none !important; } }

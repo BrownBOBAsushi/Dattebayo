@@ -40,3 +40,7 @@ The seal classifier and seal reference images are upstream assets from [bunkerap
 The hand-landmarker task is served by Google's MediaPipe model-hosting URL, and the browser libraries are served by jsDelivr. They are separate runtime dependencies from the Jutsu Hero assets; review their respective terms before reuse.
 
 The probe code in this repository has no production or game license grant. It is an internal feasibility artifact and should not be treated as a release-ready product.
+
+## Screen layout
+
+Home and Practice Mode fill the browser viewport with no page or panel scrolling. Practice uses 40% camera, 20% hand signs, and 40% character stage. The camera uses `object-fit: contain` so its full frame scales without distortion or cropping. Mobile browsers use the dynamic viewport height to stay within the visible screen. The original standalone diagnostics also fit to one screen.
