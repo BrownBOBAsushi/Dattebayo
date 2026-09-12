@@ -1,124 +1,20 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Seal webcam feasibility probe</title>
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <main class="shell">
-      <header>
-        <p class="eyebrow">Throwaway feasibility probe</p>
-        <h1>Webcam seal check</h1>
-        <p class="lede">A small diagnostic surface for testing real hand landmark inference before building the game.</p>
-      </header>
-
-      <section class="notice" aria-label="Scope">
-        <strong>Scope</strong>
-        <span>Nothing is recorded or uploaded. The camera is used only while Start is active.</span>
-      </section>
-
-      <section class="grid two-col">
-        <article class="panel camera-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">01 / camera</p>
-              <h2>Live diagnostic</h2>
-            </div>
-            <span id="camera-status" class="status" data-tone="neutral">Stopped</span>
-          </div>
-          <div class="video-wrap">
-            <video id="camera" autoplay muted playsinline aria-label="Live camera preview"></video>
-            <div id="video-placeholder" class="video-placeholder">Load the model, then allow camera access.</div>
-          </div>
-          <div class="actions">
-            <button id="load-model" type="button">Load model</button>
-            <button id="start-camera" type="button" disabled>Start camera</button>
-            <button id="stop-camera" type="button" class="quiet" disabled>Stop</button>
-          </div>
-          <p id="model-status" class="status-line" role="status">Model not loaded.</p>
-          <p id="error-status" class="error-line" role="alert" hidden></p>
-        </article>
-
-        <article class="panel readout-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">02 / signal</p>
-              <h2>Recognition readout</h2>
-            </div>
-            <span id="inference-latency" class="metric">— ms</span>
-          </div>
-          <dl class="readout">
-            <div><dt>Prediction</dt><dd id="prediction">—</dd></div>
-            <div><dt>Score</dt><dd id="prediction-score">—</dd></div>
-            <div><dt>Hands</dt><dd id="hand-count">0</dd></div>
-            <div><dt>Recent labels</dt><dd id="recent-labels">—</dd></div>
-          </dl>
-          <div class="reference">
-            <img id="seal-reference" alt="Reference seal" />
-            <div>
-              <p class="eyebrow">Pose reference</p>
-              <p id="reference-name">Choose a target below.</p>
-              <p class="muted">Keep the full hand in frame. The preview is mirrored for comfort; detection uses the raw video.</p>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section class="panel trial-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">03 / trial</p>
-            <h2>Hold and sequence check</h2>
-          </div>
-          <span id="trial-status" class="status" data-tone="neutral">Idle</span>
-        </div>
-        <div class="trial-config">
-          <label>Target seal
-            <select id="target-seal"></select>
-          </label>
-          <label>Sequence 1
-            <select class="sequence-choice"></select>
-          </label>
-          <label>Sequence 2
-            <select class="sequence-choice"></select>
-          </label>
-          <label>Sequence 3
-            <select class="sequence-choice"></select>
-          </label>
-          <button id="start-single-trial" type="button" class="quiet" disabled>Start single-sign trial</button>
-          <button id="start-trial" type="button" disabled>Start sequence trial</button>
-        </div>
-        <div class="hold-track" aria-label="Hold progress">
-          <div id="hold-progress" class="hold-progress"></div>
-        </div>
-        <p id="hold-status" class="status-line">Hold the active seal for about 350 ms.</p>
-        <div class="trial-metrics">
-          <span>Successes <strong id="success-count">0</strong></span>
-          <span>Elapsed <strong id="trial-elapsed">—</strong></span>
-          <span>Timeout <strong>15 s</strong></span>
-        </div>
-      </section>
-
-      <section class="panel log-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">04 / log</p>
-            <h2>Trial results</h2>
-          </div>
-          <button id="export-log" type="button" class="quiet">Export JSON</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Sequence</th><th>Result</th><th>Elapsed</th><th>Mean inference</th></tr></thead>
-            <tbody id="trial-log"><tr><td colspan="4" class="muted">No trials yet.</td></tr></tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer>Source model: Jutsu Hero seal classifier · Browser-only probe · No persistence</footer>
-    </main>
-    <script type="module" src="./src/app.js"></script>
-  </body>
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101216"><title>Dattebayo · Shinobi training</title><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<header class="topbar"><a class="brand" href="#home">DATTE<span>BAYO</span><b>忍</b></a><span class="top-note">SHINOBI TRAINING GROUNDS</span><a href="./probe.html" class="diagnostics">Camera diagnostics ↗</a></header>
+<main>
+<section id="home" class="home" aria-labelledby="home-title">
+<div class="home-heading"><p class="eyebrow">THE TRAINING GROUNDS</p><h1 id="home-title">Find your<br><em>ninja way.</em></h1><p>Choose your mode. Weave your signs. Release your jutsu.</p></div>
+<div class="mode-list"><button class="mode" disabled><span class="mode-number">01</span><span><strong>Single Player</strong><small>Coming soon</small></span><span>↗</span></button><button class="mode" disabled><span class="mode-number">02</span><span><strong>Multi Player</strong><small>Coming soon</small></span><span>↗</span></button><button class="mode" disabled><span class="mode-number">03</span><span><strong>Survival Mode</strong><small>Coming soon</small></span><span>↗</span></button><a href="#practice" class="mode available"><span class="mode-number">04</span><span><strong>Practice Mode</strong><small>Master one jutsu at a time</small></span><span>→</span></a></div>
+<div class="home-footer"><span>NO TIMER. JUST TRAINING.</span><span>A webcam is required for practice.</span></div>
+</section>
+<section id="practice" class="practice" hidden aria-labelledby="practice-title">
+<div class="practice-heading"><div><a href="#home" class="back">← All modes</a><h1 id="practice-title">Practice <span>Mode</span></h1></div><label class="jutsu-picker">SELECT JUTSU<select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label></div>
+<section class="camera-panel"><div class="section-label"><span><b>01</b> YOUR CAMERA</span><span id="camera-status">Camera off</span></div><div class="camera-wrap"><video id="camera" autoplay muted playsinline aria-label="Your camera, mirrored"></video><div id="camera-placeholder"><span class="camera-symbol">＋</span><strong>Enter the training grounds</strong><p>Keep both hands visible, with room to move.</p><button id="enable-camera" class="primary">Enable camera</button></div><div class="live-overlay" hidden id="live-overlay"><span id="prediction">Show a hand sign</span><button id="stop-camera" class="quiet">Stop camera</button></div></div><p id="camera-message" class="helper" role="status">Camera processing stays in your browser. Nothing is recorded or uploaded.</p><p id="error" class="error" role="alert" hidden></p></section>
+<section class="sequence-panel"><div class="section-label"><span><b>02</b> WEAVE THE SIGNS</span><span id="sequence-count">0 / 3 complete</span></div><div class="sequence-heading"><h2 id="jutsu-name">Chidori</h2><span>3-sign training version</span></div><ol id="signs" class="signs"></ol><div class="sequence-bottom"><p id="instruction" role="status">Enable your camera, then begin practice.</p><button id="begin" class="primary" disabled>Begin practice →</button></div></section>
+<section class="character-panel"><div class="section-label"><span><b>03</b> YOUR SHINOBI</span><div class="character-options" role="group" aria-label="Select your character"><button data-character="naruto" aria-pressed="false">Naruto</button><button data-character="sasuke" aria-pressed="true">Sasuke</button></div></div><div id="arena" class="arena"><div class="arena-caption"><p class="eyebrow" id="character-name">SASUKE UCHIHA</p><h2 id="action-label">Ready to train.</h2><p id="action-hint">Complete all three signs to release your jutsu.</p></div><div class="sprite-space"><img id="sprite" alt="Sasuke in a ready stance"><div id="jutsu-effect" class="jutsu-effect" aria-hidden="true"></div></div><span class="arena-marker">TRAINING / 01</span></div></section>
+<footer class="practice-footer"><span>Hold each sign for a moment. Follow the highlighted card from left to right.</span><span id="completed-count">0 jutsu performed</span></footer>
+</section>
+</main><script type="module" src="./src/practice.js"></script>
+</body></html>

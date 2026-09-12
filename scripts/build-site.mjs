@@ -8,3 +8,4 @@ for (const file of ['index.html', 'styles.css', 'probe.html']) {
   copyFileSync(new URL(file, root), new URL(file, output));
 }
 cpSync(new URL('src/', root), new URL('src/', output), { recursive: true });
+cpSync(new URL('assets/', root), new URL('assets/', output), { recursive: true });

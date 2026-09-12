@@ -1,12 +1,24 @@
-# Seal webcam feasibility probe
+# Dattebayo
+
+The homepage offers four modes. Practice Mode is playable; Single Player, Multi Player, and Survival Mode are marked coming soon.
+
+## Practice Mode
+
+Open the homepage and choose Practice Mode. Choose Chidori or Fireball Jutsu and Naruto or Sasuke, enable your camera, then begin practice. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit. The combinations are abbreviated training versions, not full canonical sequences.
+
+Changing a jutsu or character resets the current sequence. Leaving practice, hiding the tab, or stopping the camera stops its tracks and resets the sequence. No camera frames are recorded or uploaded.
+
+Run `npm run build` for the static deployment output and `npm test` for the recognition and practice-state tests. Character artwork attribution is in `assets/CREDITS.md`. Full camera recognition still needs a manual test with real hand signs.
+
+## Original seal webcam feasibility probe
 
 This is a throwaway browser probe for checking whether real webcam hand landmarks can drive the Jutsu Hero seal classifier. It is deliberately a diagnostic page, not the game.
 
 ## Setup
 
 1. Run `npm test` to execute the dependency-free Node tests.
-2. Run `node scripts/build-standalone.mjs` to regenerate `probe.html` from `index.html`, `styles.css`, and `src/`.
-3. Open `probe.html` in Chrome, click **Load model**, then **Start camera**, and grant camera permission. The page also has a module version at `index.html` for a static local server.
+2. Run `node scripts/build-standalone.mjs` to regenerate `probe.html` from `diagnostic.html`, `diagnostics.css`, and the original `src/app.js` and `src/probe-core.js`.
+3. Open `probe.html` in Chrome, click **Load model**, then **Start camera**, and grant camera permission. The page also has a module version at `diagnostic.html` for a static local server.
 4. Choose the reference seal, then use **Start single-sign trial** for one hold or choose three sequence dropdowns and use **Start sequence trial**. Start only after the live readout is producing real predictions.
 
 The page needs network access for the pinned MediaPipe, ONNX Runtime, hand-landmarker, classifier, and reference image URLs. No package install is required. If the browser rejects camera access from a `file://` page, serve this directory from a local HTTPS or localhost static server.
