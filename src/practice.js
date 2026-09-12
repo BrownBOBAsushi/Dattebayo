@@ -16,6 +16,7 @@ let frameHandle;
 let lastVideoTime = -1;
 let total = 0;
 let busy = false;
+let cameraWanted = false;
 let selectionRevision = 0;
 
 function showError(text = '') { $('error').textContent = text; $('error').hidden = !text; }
@@ -45,15 +46,13 @@ function updateSigns() {
 }
 function resetPractice() {
   selectionRevision++;
-  running = false;
+  running = Boolean(stream);
   state = newPractice();
   clearTimeout(animationTimer);
   $('arena').classList.remove('casting','fireball');
   $('action-label').textContent = 'Ready to train.';
   $('action-hint').textContent = 'Complete all three signs to release your jutsu.';
-  $('begin').textContent = 'Begin practice →';
-  $('begin').disabled = !stream;
-  $('instruction').textContent = stream ? 'Begin practice, then match the highlighted sign.' : 'Enable your camera, then begin practice.';
+  $('instruction').textContent = stream ? `Hold ${selected().signs[0]} until the card fills, then follow the next sign.` : 'Waiting for your camera…';
   updateSigns();
 }
 function setCharacter(name) {
@@ -73,13 +72,7 @@ function castJutsu() {
   $('action-hint').textContent = `${NAMES[character]} releases the jutsu.`;
   $('arena').classList.add('casting');
   $('arena').classList.toggle('fireball',$('jutsu').value === 'fireball');
-  $('begin').textContent = 'Practice again →';
-  $('begin').disabled = true;
-  animationTimer = setTimeout(() => {
-    $('arena').classList.remove('casting');
-    $('begin').disabled = !stream;
-    $('action-hint').textContent = 'Nicely done. Ready for another round?';
-  },1800);
+  animationTimer = setTimeout(resetPractice,1800);
 }
 function acceptPrediction(label, score, now, revision) {
   if (!running || revision !== selectionRevision) return;
@@ -115,7 +108,7 @@ async function loadModels() {
   return modelPromise;
 }
 async function startCamera() {
-  if (busy || stream) return;
+  if (busy || stream || !cameraWanted || document.hidden) return;
   busy = true;
   const current = ++generation;
   $('enable-camera').disabled = true;
@@ -138,8 +131,7 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
-    $('begin').disabled = false;
-    $('instruction').textContent = 'Begin practice, then match the highlighted sign.';
+    resetPractice();
     acquired.getVideoTracks()[0].addEventListener('ended', () => { if(stream === acquired) stopCamera(); });
     frameHandle = requestAnimationFrame(() => processFrame(current));
   } catch(error) {
@@ -152,10 +144,13 @@ async function startCamera() {
   } finally {
     busy = false;
     $('enable-camera').disabled = false;
-    $('enable-camera').textContent = 'Enable camera';
+    $('enable-camera').textContent = 'Retry camera';
+    // Re-entering practice during an older pending camera request must still start.
+    if (cameraWanted && current !== generation) startCamera();
   }
 }
 function stopCamera() {
+  cameraWanted = false;
   generation++;
   cancelAnimationFrame(frameHandle);
   stream?.getTracks().forEach(t => t.stop());
@@ -199,17 +194,11 @@ function route() {
   $('home').hidden = practice;
   $('practice').hidden = !practice;
   if (!practice) stopCamera();
+  else { cameraWanted = true; startCamera(); }
   window.scrollTo(0,0);
 }
-$('enable-camera').addEventListener('click',startCamera);
+$('enable-camera').addEventListener('click',() => { cameraWanted = true; startCamera(); });
 $('stop-camera').addEventListener('click',stopCamera);
-$('begin').addEventListener('click',() => {
-  if (!stream) return;
-  resetPractice();
-  running = true;
-  $('begin').textContent = 'Restart practice';
-  $('instruction').textContent = `Hold ${selected().signs[0]} until the card fills, then move to the next sign.`;
-});
 $('jutsu').addEventListener('change',() => { resetPractice(); renderSigns(); });
 document.querySelectorAll('[data-character]').forEach(b => b.addEventListener('click',() => setCharacter(b.dataset.character)));
 window.addEventListener('hashchange',route);

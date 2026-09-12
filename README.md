@@ -4,7 +4,7 @@ The homepage offers four modes. Practice Mode is playable; Single Player, Multi 
 
 ## Practice Mode
 
-Open the homepage and choose Practice Mode. Choose Chidori or Fireball Jutsu and Naruto or Sasuke, enable your camera, then begin practice. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit. The combinations are abbreviated training versions, not full canonical sequences.
+Open the homepage and choose Practice Mode. Choose Chidori or Fireball Jutsu and Naruto or Sasuke, allow camera access when prompted. The camera and recognition start automatically upon entering Practice Mode. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit and automatically starts a fresh sequence after each jutsu animation. The combinations are abbreviated training versions, not full canonical sequences.
 
 Changing a jutsu or character resets the current sequence. Leaving practice, hiding the tab, or stopping the camera stops its tracks and resets the sequence. No camera frames are recorded or uploaded.
 
