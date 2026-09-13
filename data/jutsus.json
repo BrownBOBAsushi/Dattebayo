@@ -22,7 +22,7 @@
       "style": "Katon",
       "handSigns": [
         "serpent",
-        "rat",
+        "ox",
         "bird"
       ],
       "completionSoundtrack": "./assets/audio/katon-haijingakure-no-jutsu.mp3"
@@ -83,7 +83,7 @@
       "handSigns": [
         "dog",
         "serpent",
-        "rat"
+        "monkey"
       ],
       "completionSoundtrack": "./assets/audio/suiton-suijinheki.mp3"
     },
