@@ -13,7 +13,7 @@
         "ram",
         "tiger"
       ],
-      "completionSoundtrack": "./assets/audio/gokakyu.mp3"
+      "completionSoundtrack": "./assets/audio/katon-gokakyu-no-jutsu.mp3"
     },
     {
       "id": "hiding_in_ash",
@@ -25,7 +25,7 @@
         "rat",
         "bird"
       ],
-      "completionSoundtrack": "./assets/audio/haijingakure.mp3"
+      "completionSoundtrack": "./assets/audio/katon-haijingakure-no-jutsu.mp3"
     },
     {
       "id": "emotion_waves",
@@ -37,7 +37,7 @@
         "serpent",
         "horse"
       ],
-      "completionSoundtrack": "./assets/audio/kangekiha.mp3"
+      "completionSoundtrack": "./assets/audio/raiton-kangekiha.mp3"
     },
     {
       "id": "chidori",
@@ -49,7 +49,7 @@
         "hare",
         "monkey"
       ],
-      "completionSoundtrack": "./assets/audio/chidori-koken.mp3"
+      "completionSoundtrack": "./assets/audio/raiton-chidori-koken.mp3"
     },
     {
       "id": "suijinheki",
@@ -61,7 +61,7 @@
         "serpent",
         "ram"
       ],
-      "completionSoundtrack": "./assets/audio/suijinheki.mp3"
+      "completionSoundtrack": "./assets/audio/suiton-suijinheki.mp3"
     },
     {
       "id": "rasenshuriken",
@@ -73,7 +73,7 @@
         "horse",
         "bird"
       ],
-      "completionSoundtrack": "./assets/audio/rasenshuriken.mp3"
+      "completionSoundtrack": "./assets/audio/fuuton-rasenshuriken.mp3"
     },
     {
       "id": "kazekiri",
@@ -85,7 +85,7 @@
         "serpent",
         "bird"
       ],
-      "completionSoundtrack": "./assets/audio/kazekiri.mp3"
+      "completionSoundtrack": "./assets/audio/fuuton-kazekiri-no-jutsu.mp3"
     }
   ]
 }

@@ -2,13 +2,13 @@
 
 The active catalog contains only these seven user-supplied MP3 files, copied unchanged. Filenames provided by the user determine the clip assignments.
 
-- Katon · Gōkakyū no Jutsu: `gokakyu.mp3` (supplied as `Katon Goukakyuu no Jutsu-[AudioTrimmer.com].mp3`).
-- Katon · Haijingakure no Jutsu: `haijingakure.mp3` (supplied as `Madara Uchiha _ Katon Haijingakure No Jutsu-[AudioTrimmer.com].mp3`).
-- Raiton · Kangekiha: `kangekiha.mp3` (supplied as `Darui - Kangekiha (Raiton).-[AudioTrimmer.com].mp3`).
-- Raiton · Chidori Kōken: `chidori-koken.mp3` (supplied as `Chidori Koken-[AudioTrimmer.com].mp3`).
-- Suiton · Suijinheki: `suijinheki.mp3` (supplied as `Darui - Suijinheki (Suiton).-[AudioTrimmer.com].mp3`).
-- Fūton · Rasenshuriken: `rasenshuriken.mp3` (supplied as `Fuuton_ Rasenshuriken - Pitching-[AudioTrimmer.com].mp3`).
-- Fūton · Kazekiri no Jutsu: `kazekiri.mp3` (supplied as `Kazekiri no Jutsu-[AudioTrimmer.com].mp3`).
+- Katon · Gōkakyū no Jutsu: `katon-gokakyu-no-jutsu.mp3` (supplied as `Katon Goukakyuu no Jutsu-[AudioTrimmer.com].mp3`).
+- Katon · Haijingakure no Jutsu: `katon-haijingakure-no-jutsu.mp3` (supplied as `Madara Uchiha _ Katon Haijingakure No Jutsu-[AudioTrimmer.com].mp3`).
+- Raiton · Kangekiha: `raiton-kangekiha.mp3` (supplied as `Darui - Kangekiha (Raiton).-[AudioTrimmer.com].mp3`).
+- Raiton · Chidori Kōken: `raiton-chidori-koken.mp3` (supplied as `Chidori Koken-[AudioTrimmer.com].mp3`).
+- Suiton · Suijinheki: `suiton-suijinheki.mp3` (supplied as `Darui - Suijinheki (Suiton).-[AudioTrimmer.com].mp3`).
+- Fūton · Rasenshuriken: `fuuton-rasenshuriken.mp3` (supplied as `Fuuton_ Rasenshuriken - Pitching-[AudioTrimmer.com].mp3`).
+- Fūton · Kazekiri no Jutsu: `fuuton-kazekiri-no-jutsu.mp3` (supplied as `Kazekiri no Jutsu-[AudioTrimmer.com].mp3`).
 
 All three-sign combinations remain gameplay adaptations. Earlier sourced clips below are retained as historical assets but are not selected by the active catalog.
 
