@@ -5,102 +5,87 @@
   "jutsus": [
     {
       "id": "fireball",
-      "name": "Fireball Jutsu",
+      "name": "Gōkakyū no Jutsu",
       "type": "fire",
+      "style": "Katon",
       "handSigns": [
         "serpent",
         "ram",
         "tiger"
       ],
-      "completionSoundtrack": "./assets/audio/sasuke-fireball.mp3"
+      "completionSoundtrack": "./assets/audio/gokakyu.mp3"
     },
     {
       "id": "hiding_in_ash",
-      "name": "Hiding in Ash Jutsu",
+      "name": "Haijingakure no Jutsu",
       "type": "fire",
+      "style": "Katon",
       "handSigns": [
         "serpent",
         "rat",
         "bird"
       ],
-      "completionSoundtrack": null
-    },
-    {
-      "id": "chidori",
-      "name": "Chidori",
-      "type": "lightning",
-      "handSigns": [
-        "ox",
-        "hare",
-        "monkey"
-      ],
-      "completionSoundtrack": "./assets/audio/sasuke-chidori.mp3"
+      "completionSoundtrack": "./assets/audio/haijingakure.mp3"
     },
     {
       "id": "emotion_waves",
-      "name": "Emotion Waves",
+      "name": "Kangekiha",
       "type": "lightning",
+      "style": "Raiton",
       "handSigns": [
         "ram",
         "serpent",
         "horse"
       ],
-      "completionSoundtrack": null
+      "completionSoundtrack": "./assets/audio/kangekiha.mp3"
     },
     {
-      "id": "waterdragon",
-      "name": "Water Dragon",
-      "type": "water",
+      "id": "chidori",
+      "name": "Chidori Kōken",
+      "type": "lightning",
+      "style": "Raiton",
       "handSigns": [
         "ox",
-        "monkey",
-        "bird"
+        "hare",
+        "monkey"
       ],
-      "completionSoundtrack": null
+      "completionSoundtrack": "./assets/audio/chidori-koken.mp3"
+    },
+    {
+      "id": "suijinheki",
+      "name": "Suijinheki",
+      "type": "water",
+      "style": "Suiton",
+      "handSigns": [
+        "tiger",
+        "serpent",
+        "ram"
+      ],
+      "completionSoundtrack": "./assets/audio/suijinheki.mp3"
     },
     {
       "id": "rasenshuriken",
       "name": "Rasenshuriken",
       "type": "wind",
+      "style": "Fūton",
       "handSigns": [
         "ram",
         "horse",
         "bird"
       ],
-      "completionSoundtrack": null
+      "completionSoundtrack": "./assets/audio/rasenshuriken.mp3"
     },
     {
-      "id": "casting_net",
-      "name": "Casting Net",
+      "id": "kazekiri",
+      "name": "Kazekiri no Jutsu",
       "type": "wind",
+      "style": "Fūton",
       "handSigns": [
         "tiger",
         "serpent",
         "bird"
       ],
-      "completionSoundtrack": null
-    },
-    {
-      "id": "flying_stones",
-      "name": "Flying Stones",
-      "type": "earth",
-      "handSigns": [
-        "ox",
-        "ram",
-        "dog"
-      ],
-      "completionSoundtrack": null
-    },
-    {
-      "id": "stone_column_spear",
-      "name": "Stone Column Spear",
-      "type": "earth",
-      "handSigns": [
-        "tiger",
-        "ox",
-        "dog"
-      ],
-      "completionSoundtrack": null
+      "completionSoundtrack": "./assets/audio/kazekiri.mp3"
     }
   ]
 }

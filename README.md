@@ -47,7 +47,7 @@ Home and Practice Mode fill the browser viewport with no page or panel scrolling
 
 ## Jutsu catalog
 
-Edit `data/jutsus.json` to add or change jutsu. The practice menu loads this file directly. Each entry has a stable `id`, a display `name`, an elemental `type`, exactly three `handSigns`, and a `completionSoundtrack` path or `null`. All sequences are simplified gameplay combinations, not a claim about canonical hand seals. The unnamed second water entry is intentionally omitted.
+Edit `data/jutsus.json` to add or change jutsu. The practice menu loads this file directly. Each entry has a stable `id`, a display `name`, an elemental `type`, exactly three `handSigns`, and a `completionSoundtrack` path or `null`. All sequences are simplified gameplay combinations, not a claim about canonical hand seals. The active catalog contains seven jutsu: Gōkakyū, Haijingakure, Kangekiha, Chidori Kōken, Suijinheki, Rasenshuriken, and Kazekiri. The `style` field provides the displayed Katon/Raiton/Suiton/Fūton label.
 
 Example audio assignment after adding your file:
 
@@ -55,7 +55,7 @@ Example audio assignment after adding your file:
 "completionSoundtrack": "./assets/audio/emotion-waves.mp3"
 ```
 
-Existing Chidori and Fireball clips remain configured; other requested jutsu await your recordings. The build checks unique IDs, supported elements/signs, and referenced audio files.
+All seven active entries use the supplied completion recordings. Earth techniques, Water Dragon, and Casting Net are no longer in the active menu. The build checks unique IDs, supported elements/signs, and referenced audio files.
 
 ## Homepage music
 

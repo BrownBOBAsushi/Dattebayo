@@ -9,7 +9,7 @@ const catalog = await catalogResponse.json();
 const JUTSU = Object.fromEntries(catalog.jutsus.map(jutsu => [jutsu.id, {
   name: jutsu.name, signs: jutsu.handSigns, voice: jutsu.completionSoundtrack,
   speaker: jutsu.completionSoundtrack ? 'Completion audio ready' : 'Completion audio pending',
-  type: jutsu.type, element: jutsu.type === 'fire' ? 'fireball' : jutsu.type,
+  type: jutsu.type, style: jutsu.style, element: jutsu.type === 'fire' ? 'fireball' : jutsu.type,
 }]));
 const ASSETS = 'https://raw.githubusercontent.com/bunkerapps/Jutsu-Hero/10c5a914f9f14b4427d988d253048bf0fae8eb52/public/assets/';
 const FILES = { rat:'Ne.jpg', ox:'Ushi.jpg', tiger:'Tora.jpg', hare:'U.jpg', dragon:'Tatsu.jpg', serpent:'Mi.jpg', horse:'Uma.jpg', ram:'Hitsuji.jpg', monkey:'Saru.jpg', bird:'Tori.jpg', dog:'Inu.jpg', boar:'I.jpg' };
@@ -242,7 +242,7 @@ window.addEventListener('hashchange',route);
 window.addEventListener('pagehide',stopCamera);
 document.addEventListener('visibilitychange',() => { if(document.hidden) stopCamera(); });
 $('sprite').addEventListener('error',() => showError('The character image could not load. Reload the page to try again.'));
-$('jutsu').replaceChildren(...Object.entries(JUTSU).map(([id, jutsu]) => new Option(`${jutsu.type[0].toUpperCase() + jutsu.type.slice(1)} · ${jutsu.name}`, id)));
+$('jutsu').replaceChildren(...Object.entries(JUTSU).map(([id, jutsu]) => new Option(`${jutsu.style || jutsu.type} · ${jutsu.name}`, id)));
 setCharacter(character);
 renderSigns();
 route();
