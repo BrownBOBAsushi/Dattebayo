@@ -75,4 +75,13 @@ The public leaderboard uses the Sites D1 binding `DB`. Drizzle owns its schema (
 
 A run gets a server-issued ID when the camera is ready. Only countdown completion enables name submission. Ranking uses survival duration, then jutsu count, then earliest submission. Each run can be saved once; safe retries do not duplicate it. Camera footage and landmarks remain in the browser. Names and results are public. This is a casual guest leaderboard: server timing checks and run IDs reduce invalid submissions, but browser-reported hand recognition is not cheat-proof. Competitive multiplayer will require server-authoritative match events, room lifecycle and abuse controls.
 
-The homepage's invite QR opens the public game URL. Multiplayer rooms and random matchmaking remain upcoming.
+The homepage's invite QR opens the public game URL.
+
+
+## Multiplayer: first to five
+
+Multiplayer adds two-player private rooms with six-character codes, invitation links, and random matchmaking. Both players prepare their cameras before a shared three-second countdown. They receive the same five-jutsu sequence; each three-sign completion lands one attack and removes one of the opponent's five health points. The server accepts sequential, idempotent attack counts and atomically finishes the match on the fifth attack. The first fifth attack accepted by the server wins.
+
+The lobby and duel use the `multiplayer_rooms` D1 table and `/api/multiplayer/{create,join,match,state,ready,score,leave}`. Queue claim and room creation run in one atomic D1 batch to prevent double pairing. Room codes only permit joining an empty slot; player credentials are separate random tokens held in session storage and never returned to opponents. State refreshes every second; attacks are submitted immediately. Refreshing restores the room, and leaving ends it for both players. Sixty seconds without a player's heartbeat closes the room; waiting rooms and inactive duels expire after ten minutes. This implementation is for casual play: webcam classification remains client-side and is not cheat-proof, and HTTP polling adds network latency. No video is sent to the opponent or server.
+
+Single Player remains owned by the teammate. Its agreed battle rule is also a five-hit health bar; no Single Player logic was added here.
