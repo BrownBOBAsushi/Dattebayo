@@ -22,10 +22,34 @@
       "style": "Katon",
       "handSigns": [
         "serpent",
-        "rat",
+        "ox",
         "bird"
       ],
       "completionSoundtrack": "./assets/audio/katon-haijingakure-no-jutsu.mp3"
+    },
+    {
+      "id": "goka_mekkyaku",
+      "name": "Gōka Mekkyaku",
+      "type": "fire",
+      "style": "Katon",
+      "handSigns": [
+        "horse",
+        "ox",
+        "boar"
+      ],
+      "completionSoundtrack": "./assets/audio/katon-goka-mekkyaku.mp3"
+    },
+    {
+      "id": "goryuka",
+      "name": "Gōryūka no Jutsu",
+      "type": "fire",
+      "style": "Katon",
+      "handSigns": [
+        "dragon",
+        "dog",
+        "tiger"
+      ],
+      "completionSoundtrack": "./assets/audio/katon-goryuka-no-jutsu.mp3"
     },
     {
       "id": "emotion_waves",
@@ -34,7 +58,7 @@
       "style": "Raiton",
       "handSigns": [
         "ram",
-        "serpent",
+        "monkey",
         "horse"
       ],
       "completionSoundtrack": "./assets/audio/raiton-kangekiha.mp3"
@@ -57,9 +81,9 @@
       "type": "water",
       "style": "Suiton",
       "handSigns": [
-        "tiger",
+        "dog",
         "serpent",
-        "ram"
+        "monkey"
       ],
       "completionSoundtrack": "./assets/audio/suiton-suijinheki.mp3"
     },
@@ -69,7 +93,7 @@
       "type": "wind",
       "style": "Fūton",
       "handSigns": [
-        "ram",
+        "dragon",
         "horse",
         "bird"
       ],
@@ -81,8 +105,8 @@
       "type": "wind",
       "style": "Fūton",
       "handSigns": [
-        "tiger",
-        "serpent",
+        "boar",
+        "hare",
         "bird"
       ],
       "completionSoundtrack": "./assets/audio/fuuton-kazekiri-no-jutsu.mp3"
