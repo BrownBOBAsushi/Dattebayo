@@ -67,7 +67,7 @@ Every correct sign triggers a weave sound. Completing three signs triggers a bel
 
 ## Survival Mode
 
-Survival starts automatically when the camera is ready, with 30 seconds. Every correctly confirmed sign adds 2 seconds (including the third sign). The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.
+Survival starts automatically when the camera is ready, with 30 seconds. Every completed three-sign jutsu adds 2 seconds. Individual signs do not add time. The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.
 
 ## Shared Survival leaderboard
 

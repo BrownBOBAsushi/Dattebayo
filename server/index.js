@@ -32,7 +32,7 @@ export default {
         const run = await db.prepare('SELECT started_at, completed_at FROM survival_runs WHERE id = ?').bind(body.id).first();
         if (!run) return json({ error: 'Run not found. Please start a new run.' }, 404);
         if (run.completed_at !== null) return json({ saved: true });
-        const survived = 30000 + body.signs * 2000;
+        const survived = 30000 + body.jutsus * 2000;
         const elapsed = Date.now() - run.started_at;
         if (elapsed + 1500 < survived || elapsed > 172800000) return json({ error: 'Run timing could not be verified. Please start a new run.' }, 400);
         await db.prepare('UPDATE survival_runs SET name = ?, survived_ms = ?, jutsus = ?, signs = ?, completed_at = ? WHERE id = ? AND completed_at IS NULL').bind(name, survived, body.jutsus, body.signs, Date.now(), body.id).run();

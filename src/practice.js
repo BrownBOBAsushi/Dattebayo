@@ -1,5 +1,5 @@
 import { startRankedRun, showRunResult } from './leaderboard.js';
-import { createSurvival, remainingTime, rewardWeave, randomJutsu } from './survival-core.js';
+import { createSurvival, remainingTime, recordSurvivalSign, randomJutsu } from './survival-core.js';
 import { GameAudio } from './game-audio.js';
 import './home-music.js';
 import { buildTensor, classifyScores } from './probe-core.js';
@@ -63,7 +63,7 @@ function endSurvival(reason) {
   stopCamera();
   $('survival-result-title').textContent = reason;
   const timedOut = reason === 'Time’s up!';
-  const survivedMs = timedOut ? 30000 + survival.signs * 2000 : Math.max(0, performance.now() - survival.startedAt);
+  const survivedMs = timedOut ? 30000 + survival.jutsus * 2000 : Math.max(0, performance.now() - survival.startedAt);
   $('survival-score').textContent = `${(survivedMs / 1000).toFixed(1)}s survived · ${survival.jutsus} jutsu completed`;
   showRunResult(survival, timedOut);
   $('survival-result').hidden = false;
@@ -147,7 +147,6 @@ async function castJutsu() {
   $('arena').classList.add('casting');
   $('arena').classList.add(selected().element);
   if (mode === 'survival') {
-    survival.jutsus++;
     const completedJutsu = selected();
     sound.complete(completedJutsu.voice).catch(() => {});
     chooseRandomJutsu();
@@ -171,7 +170,7 @@ function acceptPrediction(label, score, now, revision) {
   updateSigns();
   if (state.index !== oldIndex) {
     if (mode === 'survival') {
-      if (!rewardWeave(survival, performance.now())) { endSurvival('Time’s up!'); return; }
+      if (!recordSurvivalSign(survival, performance.now())) { endSurvival('Time’s up!'); return; }
       paintClock();
     }
     if (mode === 'survival' && state.completed) sound.cancel();

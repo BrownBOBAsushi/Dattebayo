@@ -18,13 +18,13 @@ test('shared results persist, sort and save idempotently; timing and names are v
   const { id } = await (await call('/api/runs', {})).json();
   const score = { id, name: 'Kakashi', signs: 3, jutsus: 1 };
   assert.equal((await call('/api/scores', score)).status, 400);
-  sql.prepare('UPDATE survival_runs SET started_at = ? WHERE id = ?').run(Date.now() - 36000, id);
+  sql.prepare('UPDATE survival_runs SET started_at = ? WHERE id = ?').run(Date.now() - 32000, id);
   assert.equal((await call('/api/scores', { ...score, name: '<script>' })).status, 400);
   assert.equal((await call('/api/scores', { ...score, jutsus: 2 })).status, 400);
   assert.equal((await call('/api/scores', score)).status, 200);
   assert.equal((await call('/api/scores', { ...score, name: 'Changed' })).status, 200);
   const board = await (await call('/api/leaderboard')).json();
-  assert.deepEqual(board.scores, [{ name: 'Kakashi', survived_ms: 36000, jutsus: 1 }]);
+  assert.deepEqual(board.scores, [{ name: 'Kakashi', survived_ms: 32000, jutsus: 1 }]);
   assert.equal((await call('/')).status, 200);
   sql.close();
 });
