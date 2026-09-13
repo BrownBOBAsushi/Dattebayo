@@ -41,3 +41,25 @@ test('simultaneous random matchmaking pairs players atomically and respects leav
  assert.equal((await call(c,'state')).room.status,'closed');
  sql.close();
 });
+
+test('camera negotiation and weave progress are restricted to room participants',async()=>{
+ const {sql,call}=setup(),a=crypto.randomUUID(),b=crypto.randomUUID(),outsider=crypto.randomUUID();
+ const {room}=await call(a,'create',{name:'A'});
+ await call(b,'join',{name:'B',code:room.code});
+ const id=crypto.randomUUID(),description={type:'offer',sdp:'v=0\r\n',id};
+ assert.equal((await call(a,'signal',{description})).status,200);
+ assert.deepEqual((await call(b,'signal')).description,description);
+ assert.equal((await call(outsider,'signal')).status,404);
+ assert.equal((await call(b,'signal',{description})).status,400);
+ const restart={type:'restart',sdp:'',id:crypto.randomUUID()};
+ assert.equal((await call(b,'signal',{description:restart})).status,200);
+ assert.deepEqual((await call(a,'signal')).description,restart);
+ assert.equal((await call(a,'state')).room.host_signal,undefined);
+ await call(a,'ready');await call(b,'ready');sql.prepare('UPDATE multiplayer_rooms SET starts_at=?').run(Date.now()-1000);
+ await call(a,'state',{weave:{index:2,jutsuIndex:0,label:'tiger'}});
+ assert.equal((await call(b,'state')).room.players[0].progress.index,2);
+ assert.equal((await call(a,'state',{weave:{index:99,jutsuIndex:0,label:'bad'}})).status,400);
+ await call(a,'leave');assert.equal((await call(b,'signal')).status,409);
+ assert.equal(sql.prepare('SELECT host_signal FROM multiplayer_rooms').get().host_signal,null);
+ sql.close();
+});
