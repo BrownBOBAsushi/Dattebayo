@@ -1,6 +1,6 @@
 const json = (body, status=200) => Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 const fail = (message,status=400) => { throw Object.assign(new Error(message),{status}); };
-const ids = ['fireball','hiding_in_ash','emotion_waves','chidori','suijinheki','rasenshuriken','kazekiri'];
+const ids = ['fireball','hiding_in_ash','goryuka','goka_mekkyaku','emotion_waves','chidori','suijinheki','rasenshuriken','kazekiri'];
 const code = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), n => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[n % 32]).join('');
 const roomFor = (db,token) => db.prepare('SELECT * FROM multiplayer_rooms WHERE host_token = ? OR guest_token = ?').bind(token,token).first();
 function publicRoom(room,token,now) {

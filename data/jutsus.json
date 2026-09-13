@@ -28,6 +28,30 @@
       "completionSoundtrack": "./assets/audio/katon-haijingakure-no-jutsu.mp3"
     },
     {
+      "id": "goka_mekkyaku",
+      "name": "Gōka Mekkyaku",
+      "type": "fire",
+      "style": "Katon",
+      "handSigns": [
+        "horse",
+        "ram",
+        "tiger"
+      ],
+      "completionSoundtrack": "./assets/audio/katon-goka-mekkyaku.mp3"
+    },
+    {
+      "id": "goryuka",
+      "name": "Gōryūka no Jutsu",
+      "type": "fire",
+      "style": "Katon",
+      "handSigns": [
+        "serpent",
+        "dragon",
+        "tiger"
+      ],
+      "completionSoundtrack": "./assets/audio/katon-goryuka-no-jutsu.mp3"
+    },
+    {
       "id": "emotion_waves",
       "name": "Kangekiha",
       "type": "lightning",
