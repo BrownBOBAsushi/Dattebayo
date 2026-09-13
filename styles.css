@@ -254,3 +254,11 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 #opponent-camera-status { z-index: 2; }
 #match-countdown { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #303637dc; color: #ffb455; font-size: clamp(64px,17vw,180px); font-weight: 900; text-shadow: 0 5px 0 #141e20; backdrop-filter: blur(5px); pointer-events: none; }
 #match-countdown[hidden] { display: none; }
+
+/* Reallocate the former 40/20/40 training layout to camera/signs, keeping 2:1. */
+.practice.training-layout { grid-template-rows: minmax(0,2fr) minmax(0,1fr); }
+.training-layout > .character-panel { display: none; }
+.training-layout .sign-card { width: min(29vw,30vh); flex-basis: min(29vw,30vh); }
+.training-layout .sign-meta { font-size: clamp(14px,2.6vh,22px); }
+.training-layout #sound-toggle { flex-shrink: 0; }
+@media(max-width:600px) { .training-layout .camera-toolbar { gap: 5px; flex-wrap: wrap; } .training-layout #sound-toggle { font-size: 11px; padding: 5px; } }

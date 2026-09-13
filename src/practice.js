@@ -1,5 +1,4 @@
 import { BattleSprites } from './battle-sprites.js';
-import { startPeerCamera, stopPeerCamera } from './peer-camera.js';
 import { matchRoom, matchScore, localMatchScore, matchCanPlay, matchJutsu, readyMatch, reportAttack, matchMessage, shareWeave } from './multiplayer.js';
 import { startRankedRun, showRunResult } from './leaderboard.js';
 import { createSurvival, remainingTime, recordSurvivalSign, randomJutsu } from './survival-core.js';
@@ -342,7 +341,6 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
-    if (mode === 'multiplayer') startPeerCamera(stream);
     await loadModels();
     if (current !== generation) return;
     $('camera-message').textContent = 'Keep both hands in frame.';
@@ -394,7 +392,6 @@ function stopCamera({ preserveBattleFeedback = false } = {}) {
   if (mode === 'single' && !preserveBattleFeedback) { presentation.stop(); presentation.clear(); }
   if (!preserveBattleFeedback) { clearTimeout(battleCalloutTimer); $('single-callout').classList.remove('show'); }
   cameraWanted = false;
-  if (mode === 'multiplayer') stopPeerCamera();
   generation++;
   cancelAnimationFrame(frameHandle);
   stream?.getTracks().forEach(t => t.stop());
@@ -446,6 +443,7 @@ function route() {
   $('home').hidden = playing || location.hash.startsWith('#multiplayer');
   $('mp-hud').hidden = mode !== 'multiplayer';
   $('practice').classList.toggle('battle-layout', mode === 'multiplayer');
+  $('practice').classList.toggle('training-layout', mode === 'practice' || mode === 'survival');
   $('opponent-camera-wrap').hidden = $('opponent-sequence').hidden = $('battle-stage').hidden = mode !== 'multiplayer';
   if (mode !== 'multiplayer') battleSprites.stop();
   $('practice').hidden = !playing;
@@ -453,6 +451,7 @@ function route() {
   $('single-battle').hidden = mode !== 'single';
   const soundToggle = $('sound-toggle');
   if (mode === 'single') $('single-sound-slot').append(soundToggle);
+  else if (mode === 'practice' || mode === 'survival') document.querySelector('.camera-toolbar').append(soundToggle);
   else document.querySelector('.arena-toolbar').append(soundToggle);
   $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode');
   $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode';
