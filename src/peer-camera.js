@@ -1,5 +1,5 @@
 import { matchRoom, matchRequest } from './multiplayer.js';
-let connection=null, channel=null, stream=null, loop=null, epoch=0, signalId=null, lastOffer=null, lastRestart=null, ignoredOffer=null, shared=false;
+let connection=null, channel=null, stream=null, loop=null, epoch=0, signalId=null, lastOffer=null, lastRestart=null, ignoredOffer=null, shared=false, reconnectTimer=null;
 const $=id=>document.getElementById(id);
 function status(message){$('opponent-camera-status').textContent=message;}
 function gather(pc){return new Promise(resolve=>{
@@ -29,12 +29,13 @@ async function makeConnection(current){
     if(current!==epoch||connection!==pc)return;
     $('opponent-camera').srcObject=event.streams[0]||new MediaStream([event.track]);
     $('opponent-camera').play().catch(()=>status('Tap the opponent video to play it.'));
-    status('Opponent camera live');
+    event.track.onunmute=()=>{if(connection===pc)status('Opponent camera live');};
+    status(event.track.muted?'Waiting for opponent video…':'Opponent camera live');
   };
   pc.onconnectionstatechange=()=>{
     if(current!==epoch||connection!==pc)return;
     if(pc.connectionState==='failed')status('Video could not connect on this network. You can keep duelling.');
-    if(pc.connectionState==='disconnected')status('Opponent video reconnecting…');
+    if(pc.connectionState==='disconnected')status('Opponent video interrupted · reconnect if it does not return.');
     if(pc.connectionState==='connected'&&!$('opponent-camera').srcObject)status('Connected · opponent camera off');
   };
   if(matchRoom()?.role==='host')wireChannel(pc.createDataChannel('weaving'));
@@ -42,7 +43,7 @@ async function makeConnection(current){
   return pc;
 }
 export function stopPeerCamera(){
-  epoch++;clearTimeout(loop);connection?.close();connection=null;channel=null;stream=null;signalId=null;lastOffer=null;lastRestart=null;ignoredOffer=null;
+  epoch++;clearTimeout(loop);clearTimeout(reconnectTimer);connection?.close();connection=null;channel=null;stream=null;signalId=null;lastOffer=null;lastRestart=null;ignoredOffer=null;
   $('opponent-camera').srcObject=null;status('Waiting for opponent camera…');
 }
 export async function startPeerCamera(localStream){
@@ -85,7 +86,7 @@ export async function startPeerCamera(localStream){
       if(current===epoch)loop=setTimeout(tick,connection?.connectionState==='connected'?5000:1200);
     }
     tick();
-  }catch{if(current===epoch)status('Video connection unavailable. The duel can continue.');}
+  }catch{if(current===epoch){status('Retrying video connection…');reconnectTimer=setTimeout(()=>{if(current===epoch&&stream)startPeerCamera(stream);},5000);}}
 }
 let lastSent=0;
 window.addEventListener('multiplayer:weave',event=>{
@@ -95,3 +96,5 @@ window.addEventListener('multiplayer:weave',event=>{
 window.addEventListener('multiplayer:leave',stopPeerCamera);
 window.addEventListener('pagehide',stopPeerCamera);
 $('opponent-camera').addEventListener('click',()=>$('opponent-camera').play().catch(()=>{}));
+
+document.getElementById('reconnect-video').addEventListener('click',()=>{if(stream)startPeerCamera(stream);else status('Start your camera first, then reconnect video.');});

@@ -235,3 +235,14 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 .fighter-label { position: absolute; top: 15%; font-size: 14px; font-weight: bold; color: #ffe1a1; text-shadow: 0 1px 3px black; }.sasuke-label { left: 6%; }.naruto-label { right: 6%; }
 .battle-layout .arena-footer { bottom: 2px; pointer-events: none; }.battle-layout .arena-footer #sound-status { display:none; }
 @media(max-height:500px) { .battle-layout #mp-hud { top: 32px; }.battle-layout #mp-hud > div { font-size: 11px; padding: 2px 5px; }.battle-layout #mp-hud > p { font-size: 11px; }#opponent-camera-status { font-size: 10px; }.fighter-label { top: 8%; font-size: 12px; }.camera-share-option { margin: 4px 0 !important; }.camera-share-note { margin: 3px 0 !important; } }
+
+#intro-dialog { width: min(880px, 92vw); max-width: 92vw; max-height: 92dvh; box-sizing: border-box; padding: clamp(16px,3vh,32px); border: 2px solid #e9943b; border-radius: 20px; background: #152626; color: #fff4df; text-align: center; overflow: hidden; }
+#intro-dialog[open] { display: flex; flex-direction: column; align-items: center; gap: clamp(8px,1.5vh,16px); }
+#intro-dialog::backdrop { background: #071010dd; backdrop-filter: blur(7px); }
+#intro-dialog h2 { margin: 0; color: #ffad49; font-size: clamp(28px,6vh,56px); }
+#intro-dialog p { margin: 0; max-width: 60ch; font-size: clamp(12px,1.8vh,18px); }
+#intro-dialog .intro-kicker { letter-spacing: .14em; color: #ffad49; font-size: 11px; }
+#intro-video { width: 100%; height: min(43dvh,420px); min-height: 0; object-fit: contain; background: #081414; border-radius: 12px; }
+#intro-go { flex-shrink: 0; min-width: 180px; }
+
+#reconnect-video { position: absolute; z-index: 5; right: 6px; bottom: 36px; padding: 5px 8px; font-size: 11px; background: #102321dd; }

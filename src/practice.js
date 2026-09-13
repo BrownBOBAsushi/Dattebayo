@@ -329,10 +329,9 @@ async function startCamera() {
   showError();
   let acquired;
   try {
-    await loadModels();
-    if (current !== generation) return;
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('Open this game using its HTTPS link in Safari or Chrome to enable the camera.');
     $('camera-message').textContent = 'Allow camera access to start practicing.';
-    acquired = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'user'},audio:false });
+    acquired = await navigator.mediaDevices.getUserMedia({ video:{facingMode:{ideal:'user'},width:{ideal:640},height:{ideal:480},frameRate:{ideal:24,max:30}},audio:false });
     if (current !== generation) { acquired.getTracks().forEach(t => t.stop()); return; }
     stream = acquired;
     $('camera').srcObject = stream;
@@ -343,6 +342,10 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
+    if (mode === 'multiplayer') startPeerCamera(stream);
+    await loadModels();
+    if (current !== generation) return;
+    $('camera-message').textContent = 'Keep both hands in frame.';
     if (mode === 'single') {
       battleState = cameraReady(battleState, performance.now());
       presentation.start();
@@ -358,7 +361,6 @@ async function startCamera() {
       beginSurvival(rankedId);
     }
     if (mode === 'multiplayer') {
-      startPeerCamera(stream);
       await readyMatch();
       if (current !== generation) return;
       clearInterval(clockHandle);

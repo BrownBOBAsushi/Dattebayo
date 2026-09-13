@@ -42,7 +42,7 @@
         <video id="camera" autoplay muted playsinline aria-label="Your camera, mirrored"></video>
         <div id="camera-placeholder"><strong>Practice Mode</strong><p>Keep both hands in view.</p><button id="enable-camera" class="primary">Retry camera</button></div>
       </div>
-      <div class="opponent-camera-wrap" id="opponent-camera-wrap" hidden><video id="opponent-camera" autoplay muted playsinline aria-label="Opponent camera"></video><p id="opponent-camera-status" role="status">Waiting for opponent camera…</p></div>
+      <div class="opponent-camera-wrap" id="opponent-camera-wrap" hidden><video id="opponent-camera" autoplay muted playsinline aria-label="Opponent camera"></video><button id="reconnect-video" class="quiet" type="button">Reconnect video</button><p id="opponent-camera-status" role="status">Waiting for opponent camera…</p></div>
       <div class="camera-toolbar"><a href="#home" class="back">← Home</a><span id="camera-status">Camera off</span><span id="survival-timer" hidden aria-label="Time remaining">30.0s</span><label class="jutsu-picker"><span class="sr-only">Select jutsu</span><select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label><span id="survival-jutsu" hidden></span></div>
       <div id="mp-hud" hidden><div><span id="mp-you-name">You</span><progress id="mp-you-health" max="5" value="5"></progress><span id="mp-you-hp">5/5 HP</span></div><div><span id="mp-them-name">Opponent</span><progress id="mp-them-health" max="5" value="5"></progress><span id="mp-them-hp">5/5 HP</span></div><p id="mp-battle-status" role="status"></p><button id="mp-battle-exit" class="quiet">Leave match</button></div>
       <div class="camera-feedback"><p id="camera-message" role="status">Camera stays in your browser. Nothing is recorded.</p><p id="error" class="error" role="alert" hidden></p></div>
@@ -77,6 +77,14 @@
   <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
 </dialog>
 <dialog id="invite-dialog" class="game-dialog invite-dialog" aria-labelledby="invite-title"><button class="quiet dialog-close" data-close>Close</button><h2 id="invite-title">Enter the Ninja Academy</h2><img src="./assets/game-qr.svg" alt="QR code to open Dattebayo"><p>Scan to play on your phone.</p><a class="primary" href="./assets/game-qr.svg" download="dattebayo-qr.svg">Download QR</a></dialog>
+<dialog id="intro-dialog" aria-labelledby="intro-title">
+  <p class="intro-kicker">WELCOME TO THE NINJA ACADEMY</p>
+  <h2 id="intro-title">Dattebayo!</h2>
+  <p>The game where you can practice to be a Hokage. Improve your sign weaving speed, master three hand signs, and unleash your jutsu!</p>
+  <video id="intro-video" src="./assets/introduction.mp4" autoplay loop muted playsinline preload="auto" aria-label="A short demonstration of hand-sign weaving"></video>
+  <button id="intro-go" class="primary">Let's go!</button>
+</dialog>
+<script type="module" src="./src/introduction.js"></script>
 <script type="module" src="./src/practice.js"></script>
 </body>
 </html>
