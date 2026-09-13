@@ -13,11 +13,19 @@
     <div class="home-title"><p>NINJA ACADEMY</p><h1 id="home-title">DATTE<span>BAYO!</span></h1><span class="home-subtitle">Choose your ninja way.</span></div>
     <nav class="mode-list" aria-label="Game modes">
       <a href="#single-player" class="mode available"><strong>Single Player</strong><small>Health battle · 10s per jutsu</small></a>
-      <button class="mode" disabled><strong>Multi Player</strong><small>Coming soon</small></button>
-      <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per sign</small></a>
+      <a href="#multiplayer" class="mode available"><strong>Multi Player</strong><small>First to 5 attacks</small></a>
+      <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
     </nav>
-    <p class="home-footer">HIDDEN LEAF VILLAGE · TRAINING GROUNDS</p>
+    <div class="home-footer"><button class="quiet" data-leaderboard>High scores</button> <button class="quiet" id="invite-open">Invite a ninja · QR</button></div>
+  </section>
+  <section id="multiplayer" class="multiplayer" hidden aria-labelledby="mp-title">
+    <button id="mp-exit" class="back">← Home</button><div class="mp-card"><p>NINJA DUEL</p><h1 id="mp-title">Multiplayer</h1><p>Complete jutsus to attack. First to 5 wins.</p>
+    <div id="mp-entry"><label for="mp-name">Your ninja name</label><input id="mp-name" maxlength="24" autocomplete="nickname" placeholder="Enter your name">
+    <div class="mp-actions"><button class="primary" data-mp-enter="create">Create room</button><button class="primary" data-mp-enter="match">Find opponent</button></div>
+    <div class="mp-join"><label class="sr-only" for="mp-code">Room code</label><input id="mp-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button class="quiet" data-mp-enter="join">Join room</button></div></div>
+    <div id="mp-waiting" hidden><p id="mp-room-kind"></p><strong id="mp-room-code"></strong><button id="mp-copy" class="quiet">Copy invite link</button><div id="mp-players"></div><div class="mp-actions"><button id="mp-ready" class="primary">Ready · enable camera</button><button id="mp-leave" class="quiet">Leave room</button></div></div>
+    <p id="mp-status" role="status"></p></div>
   </section>
   <section id="practice" class="practice" hidden aria-label="Practice Mode">
     <section id="single-battle" class="single-battle-panel" hidden aria-label="Single Player battle">
@@ -36,6 +44,7 @@
         <div id="camera-placeholder"><strong>Practice Mode</strong><p>Keep both hands in view.</p><button id="enable-camera" class="primary">Retry camera</button></div>
       </div>
       <div class="camera-toolbar"><a href="#home" class="back">← Home</a><span id="camera-status">Camera off</span><span id="survival-timer" hidden aria-label="Time remaining">30.0s</span><label class="jutsu-picker"><span class="sr-only">Select jutsu</span><select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label><span id="survival-jutsu" hidden></span></div>
+      <div id="mp-hud" hidden><div><span id="mp-you-name">You</span><progress id="mp-you-health" max="5" value="5"></progress><span id="mp-you-hp">5/5 HP</span></div><div><span id="mp-them-name">Opponent</span><progress id="mp-them-health" max="5" value="5"></progress><span id="mp-them-hp">5/5 HP</span></div><p id="mp-battle-status" role="status"></p><button id="mp-battle-exit" class="quiet">Leave match</button></div>
       <div class="camera-feedback"><p id="camera-message" role="status">Camera stays in your browser. Nothing is recorded.</p><p id="error" class="error" role="alert" hidden></p></div>
       <div class="live-overlay" hidden id="live-overlay"><span id="prediction">Show a hand sign</span><button id="stop-camera" class="quiet">Stop camera</button></div>
     </section>
@@ -52,13 +61,21 @@
       </div>
     </section>
     <div id="survival-result" hidden role="dialog" aria-modal="true" aria-labelledby="survival-result-title">
-      <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
+      <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><form id="score-form" hidden><label for="player-name">Your ninja name</label><input id="player-name" name="name" maxlength="24" required autocomplete="nickname" placeholder="Enter your name"><button id="score-save" class="primary">Save score</button></form><p id="score-status" role="status"></p><button class="quiet" data-leaderboard>High scores</button><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
     </div>
     <div id="single-result" hidden role="dialog" aria-modal="true" aria-labelledby="single-result-title">
       <div><p class="battle-kicker">SINGLE PLAYER</p><h2 id="single-result-title">Victory</h2><p id="single-result-copy"></p><button id="single-replay" class="primary">Replay</button><a href="#home" class="back">Home</a></div>
     </div>
   </section>
 </main>
+<div id="mp-finish" hidden role="dialog" aria-modal="true" aria-labelledby="mp-finish-title"><div><h2 id="mp-finish-title"></h2><p id="mp-finish-detail"></p><button id="mp-again" class="primary">Back to lobby</button></div></div>
+<dialog id="leaderboard-dialog" class="game-dialog" aria-labelledby="leaderboard-title">
+  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Survival · High scores</h2>
+  <p class="ranking-note">Longest survival wins. Jutsus break ties.</p><p id="leaderboard-status" role="status"></p>
+  <table><thead><tr><th>#</th><th>Ninja</th><th>Survived</th><th>Jutsus</th></tr></thead><tbody id="leaderboard-rows"></tbody></table>
+  <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
+</dialog>
+<dialog id="invite-dialog" class="game-dialog invite-dialog" aria-labelledby="invite-title"><button class="quiet dialog-close" data-close>Close</button><h2 id="invite-title">Enter the Ninja Academy</h2><img src="./assets/game-qr.svg" alt="QR code to open Dattebayo"><p>Scan to play on your phone.</p><a class="primary" href="./assets/game-qr.svg" download="dattebayo-qr.svg">Download QR</a></dialog>
 <script type="module" src="./src/practice.js"></script>
 </body>
 </html>

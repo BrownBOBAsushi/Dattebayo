@@ -1,7 +1,7 @@
 import { mkdirSync, copyFileSync, cpSync, rmSync, readFileSync, existsSync } from 'node:fs';
 
 const root = new URL('../', import.meta.url);
-const output = new URL('dist/', root);
+const output = new URL('dist/client/', root);
 const { LABELS } = await import('../src/probe-core.js');
 const catalog = JSON.parse(readFileSync(new URL('data/jutsus.json', root), 'utf8'));
 const ids = new Set();
@@ -13,7 +13,7 @@ for (const jutsu of catalog.jutsus) {
   if (jutsu.completionSoundtrack !== null && (typeof jutsu.completionSoundtrack !== 'string' || !existsSync(new URL(jutsu.completionSoundtrack, root)))) throw new Error(`Missing completion audio: ${jutsu.id}`);
 }
 
-rmSync(output, { recursive: true, force: true });
+rmSync(new URL('dist/', root), { recursive: true, force: true });
 mkdirSync(output, { recursive: true });
 for (const file of ['index.html', 'styles.css', 'probe.html']) {
   copyFileSync(new URL(file, root), new URL(file, output));
@@ -22,3 +22,7 @@ cpSync(new URL('src/', root), new URL('src/', output), { recursive: true });
 cpSync(new URL('assets/', root), new URL('assets/', output), { recursive: true });
 
 cpSync(new URL('data/', root), new URL('data/', output), { recursive: true });
+cpSync(new URL('server/', root), new URL('dist/server/', root), { recursive: true });
+mkdirSync(new URL('dist/.openai/', root), { recursive: true });
+copyFileSync(new URL('.openai/hosting.json', root), new URL('dist/.openai/hosting.json', root));
+cpSync(new URL('drizzle/', root), new URL('dist/.openai/drizzle/', root), { recursive: true });

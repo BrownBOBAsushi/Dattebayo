@@ -1,6 +1,6 @@
 # Dattebayo
 
-The homepage offers four modes. Practice Mode, Survival Mode and Single Player are playable; Multi Player remains marked coming soon.
+The homepage offers four modes: Practice Mode, Survival Mode, Single Player (3 HP), and Multi Player (5 HP).
 
 ## Single Player
 
@@ -14,7 +14,7 @@ The Single Player arena uses temporary procedural greybox art so the integration
 
 The implemented Sasuke/Naruto flow is the 3 HP battle with three continuous signs held for 300 ms, a 10-second window per jutsu, pause/resume handling, and no RPS layer. The main integration points are [`src/battle-core.js`](src/battle-core.js), [`src/battle-presentation.js`](src/battle-presentation.js), and [`src/practice.js`](src/practice.js).
 
-Edmund's pending follow-up is to preserve and reconcile the existing High scores, Invite a ninja, leaderboard/QR, Survival, and multiplayer work during the merge. Live publication and testing require the owning Sites workspace for this project; browser and real-camera testing and alignment with the upstream procedural-art prototype remain pending.
+The merge preserves the existing High scores, Invite a ninja, leaderboard/QR, Survival, and multiplayer work. Edmund's remaining follow-up is browser and real-camera testing, alignment with the upstream procedural-art prototype, and live publication/testing through the owning Sites workspace for this project.
 
 ## Practice Mode
 
@@ -81,4 +81,19 @@ Every correct sign triggers a weave sound. Completing three signs triggers a bel
 
 ## Survival Mode
 
-Survival starts automatically when the camera is ready, with 30 seconds. Every correctly confirmed sign adds 2 seconds (including the third sign). The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.
+Survival starts automatically when the camera is ready, with 30 seconds. Every completed three-sign jutsu adds 2 seconds. Individual signs do not add time. The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.
+
+## Shared Survival leaderboard
+
+The public leaderboard uses the Sites D1 binding `DB`. Drizzle owns its schema (`db/schema.ts`); generate schema changes with `npx drizzle-kit generate`, then build and publish the generated `drizzle/` migrations with the site. The Worker serves `/api/runs`, `/api/scores`, and `/api/leaderboard`; static game files build to `dist/client`.
+
+A run gets a server-issued ID when the camera is ready. Only countdown completion enables name submission. Ranking uses survival duration, then jutsu count, then earliest submission. Each run can be saved once; safe retries do not duplicate it. Camera footage and landmarks remain in the browser. Names and results are public. This is a casual guest leaderboard: server timing checks and run IDs reduce invalid submissions, but browser-reported hand recognition is not cheat-proof. Competitive multiplayer will require server-authoritative match events, room lifecycle and abuse controls.
+
+The homepage's invite QR opens the public game URL.
+
+
+## Multiplayer: first to five
+
+Multiplayer adds two-player private rooms with six-character codes, invitation links, and random matchmaking. Both players prepare their cameras before a shared three-second countdown. They receive the same five-jutsu sequence; each three-sign completion lands one attack and removes one of the opponent's five health points. The server accepts sequential, idempotent attack counts and atomically finishes the match on the fifth attack. The first fifth attack accepted by the server wins.
+
+The lobby and duel use the `multiplayer_rooms` D1 table and `/api/multiplayer/{create,join,match,state,ready,score,leave}`. Queue claim and room creation run in one atomic D1 batch to prevent double pairing. Room codes only permit joining an empty slot; player credentials are separate random tokens held in session storage and never returned to opponents. State refreshes every second; attacks are submitted immediately. Refreshing restores the room, and leaving ends it for both players. Sixty seconds without a player's heartbeat closes the room; waiting rooms and inactive duels expire after ten minutes. This implementation is for casual play: webcam classification remains client-side and is not cheat-proof, and HTTP polling adds network latency. No video is sent to the opponent or server.

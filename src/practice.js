@@ -1,4 +1,6 @@
-import { createSurvival, remainingTime, rewardWeave, randomJutsu } from './survival-core.js';
+import { matchRoom, matchScore, matchCanPlay, matchJutsu, readyMatch, reportAttack, matchMessage } from './multiplayer.js';
+import { startRankedRun, showRunResult } from './leaderboard.js';
+import { createSurvival, remainingTime, recordSurvivalSign, randomJutsu } from './survival-core.js';
 import { GameAudio } from './game-audio.js';
 import './home-music.js';
 import { buildTensor, classifyScores } from './probe-core.js';
@@ -51,8 +53,10 @@ function paintClock() {
   $('survival-timer').classList.toggle('urgent', remaining <= 5000);
   if (!remaining) endSurvival('Time’s up!');
 }
-function beginSurvival() {
+function beginSurvival(rankedId) {
   survival = createSurvival(performance.now());
+  survival.rankedId = rankedId;
+  survival.startedAt = performance.now();
   total = 0;
   $('completed-count').textContent = '0 jutsu performed';
   $('survival-result').hidden = true;
@@ -66,7 +70,10 @@ function endSurvival(reason) {
   clearInterval(clockHandle);
   stopCamera();
   $('survival-result-title').textContent = reason;
-  $('survival-score').textContent = `${survival.jutsus} jutsu completed · ${survival.signs} signs woven`;
+  const timedOut = reason === 'Time’s up!';
+  const survivedMs = timedOut ? 30000 + survival.jutsus * 2000 : Math.max(0, performance.now() - survival.startedAt);
+  $('survival-score').textContent = `${(survivedMs / 1000).toFixed(1)}s survived · ${survival.jutsus} jutsu completed`;
+  showRunResult(survival, timedOut);
   $('survival-result').hidden = false;
   $('survival-retry').focus();
 }
@@ -188,7 +195,7 @@ function updateSigns() {
 function resetPractice({ preserveAudio = false } = {}) {
   selectionRevision++;
   if (!preserveAudio) sound.cancel();
-  running = Boolean(stream) && (mode !== 'survival' || Boolean(survival && !survival.ended)) && (mode !== 'single' || battleState.phase === 'active');
+  running = Boolean(stream) && (mode !== 'survival' || Boolean(survival && !survival.ended)) && (mode !== 'single' || battleState.phase === 'active') && (mode !== 'multiplayer' || matchCanPlay());
   state = newPractice();
   clearTimeout(animationTimer);
   $('arena').classList.remove('casting','fireball','earth','water','clone','lightning','wind');
@@ -206,21 +213,25 @@ function setCharacter(name) {
   $('sprite').alt = `${NAMES[name]} in a ready stance`;
   $('character-name').textContent = NAMES[name].toUpperCase();
   document.querySelectorAll('[data-character]').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.character === name)));
-  if (mode !== 'survival' && mode !== 'single') resetPractice();
+  if (mode === 'practice') resetPractice();
 }
 async function castJutsu() {
   const revision = selectionRevision;
   const started = performance.now();
   running = false;
-  total++;
+  if (mode !== 'multiplayer') total++;
   $('completed-count').textContent = `${total} jutsu performed`;
   $('instruction').textContent = `${selected().name} released! All three signs complete.`;
   $('action-label').textContent = `${selected().name}!`;
   $('action-hint').textContent = `${NAMES[character]} releases the jutsu.`;
   $('arena').classList.add('casting');
   $('arena').classList.add(selected().element);
+  if (mode === 'multiplayer') {
+    sound.complete(selected().voice).catch(() => {});
+    reportAttack();
+    return;
+  }
   if (mode === 'survival') {
-    survival.jutsus++;
     const completedJutsu = selected();
     sound.complete(completedJutsu.voice).catch(() => {});
     chooseRandomJutsu();
@@ -237,7 +248,7 @@ async function castJutsu() {
   animationTimer = setTimeout(resetPractice, Math.max(0, 1800 - (performance.now() - started)));
 }
 function acceptPrediction(label, score, now, revision = selectionRevision) {
-  if (!running || revision !== selectionRevision) return;
+  if (!running || revision !== selectionRevision || (mode === 'multiplayer' && !matchCanPlay())) return;
   if (mode === 'single' && battleState.phase !== 'active') return;
   if (mode === 'survival' && (!survival || survival.ended || remainingTime(survival, performance.now()) === 0)) { endSurvival('Time’s up!'); return; }
   const oldIndex = state.index;
@@ -246,7 +257,7 @@ function acceptPrediction(label, score, now, revision = selectionRevision) {
   let singleDamage = null;
   if (state.index !== oldIndex) {
     if (mode === 'survival') {
-      if (!rewardWeave(survival, performance.now())) { endSurvival('Time’s up!'); return; }
+      if (!recordSurvivalSign(survival, performance.now())) { endSurvival('Time’s up!'); return; }
       paintClock();
     }
     if (mode === 'survival' && state.completed) sound.cancel();
@@ -317,7 +328,6 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
-    if (mode === 'survival' && !survival) beginSurvival();
     if (mode === 'single') {
       battleState = cameraReady(battleState, performance.now());
       presentation.start();
@@ -326,6 +336,20 @@ async function startCamera() {
         battleClockHandle = setInterval(paintBattleClock, 50);
       }
       syncSingleJutsu();
+    }
+    if (mode === 'survival' && !survival) {
+      const rankedId = await startRankedRun();
+      if (current !== generation) return;
+      beginSurvival(rankedId);
+    }
+    if (mode === 'multiplayer') {
+      await readyMatch();
+      if (current !== generation) return;
+      clearInterval(clockHandle);
+      clockHandle = setInterval(() => {
+        $('mp-battle-status').textContent = matchMessage();
+        running = Boolean(stream) && matchCanPlay() && !state.completed;
+      }, 100);
     }
     resetPractice();
     acquired.getVideoTracks()[0].addEventListener('ended', () => { if(stream === acquired) stopCamera(); });
@@ -394,31 +418,38 @@ function route() {
   stopCamera();
   clearInterval(clockHandle);
   survival = null;
-  const playing = ['#practice', '#survival', '#single-player'].includes(location.hash);
-  mode = location.hash === '#survival' ? 'survival' : location.hash === '#single-player' ? 'single' : 'practice';
+  const playing = ['#practice', '#survival', '#single-player', '#battle'].includes(location.hash);
+  mode = location.hash === '#battle' ? 'multiplayer' : location.hash === '#survival' ? 'survival' : location.hash === '#single-player' ? 'single' : 'practice';
   if (mode === 'single') {
     battleState = createBattle({ jutsuIds: Object.keys(JUTSU) });
     stopBattleClock();
   }
-  $('home').hidden = playing;
+  $('home').hidden = playing || location.hash.startsWith('#multiplayer');
+  $('mp-hud').hidden = mode !== 'multiplayer';
   $('practice').hidden = !playing;
   $('practice').classList.toggle('single-mode', mode === 'single');
   $('single-battle').hidden = mode !== 'single';
   const soundToggle = $('sound-toggle');
   if (mode === 'single') $('single-sound-slot').append(soundToggle);
   else document.querySelector('.arena-toolbar').append(soundToggle);
-  $('practice').setAttribute('aria-label', mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode');
-  $('camera-placeholder').querySelector('strong').textContent = mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode';
+  $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode');
+  $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode';
   $('survival-result').hidden = true;
   $('single-result').hidden = true;
   $('survival-timer').hidden = mode !== 'survival';
   $('survival-timer').textContent = '30.0s';
   $('survival-jutsu').hidden = mode !== 'survival';
-  $('jutsu').closest('label').hidden = mode === 'survival' || mode === 'single';
-  $('jutsu').disabled = mode === 'survival' || mode === 'single';
+  $('jutsu').closest('label').hidden = mode !== 'practice';
+  $('jutsu').disabled = mode !== 'practice';
   updateBattleUi();
   if (mode === 'single') presentation.renderStill();
   if (mode === 'survival') chooseRandomJutsu();
+  if (mode === 'multiplayer') {
+    if (!matchRoom()) { location.hash = '#multiplayer'; return; }
+    total = matchScore();
+    $('jutsu').value = matchJutsu();
+    renderSigns();
+  }
   if (playing) { cameraWanted = true; startCamera(); }
   window.scrollTo(0,0);
 }
@@ -440,8 +471,19 @@ $('single-replay').addEventListener('click', () => {
 });
 $('enable-camera').addEventListener('click',() => { if (mode === 'single' && ['victory', 'defeat'].includes(battleState.phase)) return; cameraWanted = true; startCamera(); });
 $('stop-camera').addEventListener('click',stopCamera);
-$('jutsu').addEventListener('change',() => { if (mode !== 'survival') { resetPractice(); renderSigns(); } });
+$('jutsu').addEventListener('change',() => { if (mode === 'practice') { resetPractice(); renderSigns(); } });
 document.querySelectorAll('[data-character]').forEach(b => b.addEventListener('click',() => setCharacter(b.dataset.character)));
+window.addEventListener('multiplayer:update', () => {
+  if (mode !== 'multiplayer') return;
+  if (['finished','closed'].includes(matchRoom()?.status)) { clearInterval(clockHandle); stopCamera(); return; }
+  if (matchScore() > total) {
+    total = matchScore();
+    $('completed-count').textContent = `${total} attacks landed`;
+    $('jutsu').value = matchJutsu();
+    renderSigns();
+    resetPractice({ preserveAudio: true });
+  }
+});
 window.addEventListener('hashchange',route);
 window.addEventListener('pagehide',stopCamera);
 document.addEventListener('visibilitychange',() => { if(document.hidden) stopCamera(); });

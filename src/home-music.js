@@ -4,7 +4,7 @@ const music = new Audio();
 music.preload = 'auto';
 let configured = false;
 let enabled = true;
-const onHome = () => !['#single-player', '#practice', '#survival'].includes(location.hash) && !document.hidden;
+const onHome = () => !['#single-player', '#practice', '#survival', '#battle'].includes(location.hash) && !document.hidden;
 function updateLabel() {
   button.disabled = !configured;
   button.textContent = !configured ? 'Music pending audio' : !enabled ? 'Music off' : music.paused ? 'Enable music' : 'Music on';
