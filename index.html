@@ -12,7 +12,7 @@
     <button id="music-toggle" class="quiet music-toggle" aria-pressed="false">Music pending audio</button>
     <div class="home-title"><p>NINJA ACADEMY</p><h1 id="home-title">DATTE<span>BAYO!</span></h1><span class="home-subtitle">Choose your ninja way.</span></div>
     <nav class="mode-list" aria-label="Game modes">
-      <button class="mode" disabled><strong>Single Player</strong><small>Coming soon</small></button>
+      <a href="#single-player" class="mode available"><strong>Single Player</strong><small>Health battle · 10s per jutsu</small></a>
       <a href="#multiplayer" class="mode available"><strong>Multi Player</strong><small>First to 5 attacks</small></a>
       <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
@@ -28,6 +28,16 @@
     <label class="camera-share-option"><input id="mp-share-camera" type="checkbox" checked> Share my camera with my opponent</label><p class="camera-share-note">Video only · no microphone · no recording</p><p id="mp-status" role="status"></p></div>
   </section>
   <section id="practice" class="practice" hidden aria-label="Practice Mode">
+    <section id="single-battle" class="single-battle-panel" hidden aria-label="Single Player battle">
+      <div class="single-battle-head">
+        <div><p class="battle-kicker">VALLEY OF THE END · PROTOTYPE</p><h2>Single Player</h2></div>
+        <div class="battle-fighter player"><strong>SASUKE</strong><small>PLAYER</small><div id="player-hp" class="battle-hp" aria-label="Sasuke health"></div></div>
+        <div class="battle-timer-wrap"><span id="single-timer-label">JUTSU WINDOW</span><strong id="single-timer" aria-label="Time remaining">10.0s</strong></div>
+        <div class="battle-fighter cpu"><strong>NARUTO</strong><small>CPU</small><div id="cpu-hp" class="battle-hp cpu" aria-label="Naruto health"></div></div>
+      </div>
+      <div class="battle-arena-wrap"><canvas id="single-arena" width="960" height="540" aria-label="Procedural greybox battle arena"></canvas><div id="single-callout" class="battle-callout" aria-live="polite"></div></div>
+      <div class="single-battle-footer"><span id="single-jutsu">Preparing your first jutsu…</span><span id="single-rule">Complete 3 signs in 10 seconds to hit; miss the window and Naruto hits.</span><span class="greybox-note">PROTOTYPE ART · GREYBOX</span><span id="single-sound-slot"></span><span id="single-status" role="status">Allow camera access to begin.</span></div>
+    </section>
     <section class="camera-panel" aria-label="Your camera">
       <div class="camera-wrap">
         <video id="camera" autoplay muted playsinline aria-label="Your camera, mirrored"></video>
@@ -54,6 +64,9 @@
     </section>
     <div id="survival-result" hidden role="dialog" aria-modal="true" aria-labelledby="survival-result-title">
       <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><form id="score-form" hidden><label for="player-name">Your ninja name</label><input id="player-name" name="name" maxlength="24" required autocomplete="nickname" placeholder="Enter your name"><button id="score-save" class="primary">Save score</button></form><p id="score-status" role="status"></p><button class="quiet" data-leaderboard>High scores</button><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
+    </div>
+    <div id="single-result" hidden role="dialog" aria-modal="true" aria-labelledby="single-result-title">
+      <div><p class="battle-kicker">SINGLE PLAYER</p><h2 id="single-result-title">Victory</h2><p id="single-result-copy"></p><button id="single-replay" class="primary">Replay</button><a href="#home" class="back">Home</a></div>
     </div>
   </section>
 </main>

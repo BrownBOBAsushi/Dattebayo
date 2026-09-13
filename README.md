@@ -1,6 +1,20 @@
 # Dattebayo
 
-The homepage offers four modes. Practice Mode and Survival Mode are playable; Single Player and Multi Player are marked coming soon.
+The homepage offers four modes: Practice Mode, Survival Mode, Single Player (3 HP), and Multi Player (5 HP).
+
+## Single Player
+
+Open the homepage and choose Single Player. Sasuke is the player on the left and Naruto is the CPU on the right. Each fighter starts with 3 HP. The camera and recognition start together after camera access is ready; the 10-second jutsu window does not begin before then.
+
+Hold each highlighted seal for 300 ms at at least 0.6 confidence. Completing all three signs before the deadline deals exactly 1 damage to Naruto and immediately chooses a different jutsu. Missing the deadline deals exactly 1 damage to Sasuke and starts the next jutsu. The third hit wins or loses the battle. A stopped camera or hidden tab pauses the current clock and clears the partial sequence; use Retry camera to resume with the remaining time. Replay resets both health bars.
+
+The Single Player arena uses temporary procedural greybox art so the integration can be tested without presenting unfinished runtime sprites as final artwork. No camera frames are recorded or uploaded.
+
+### Integration handoff
+
+The implemented Sasuke/Naruto flow is the 3 HP battle with three continuous signs held for 300 ms, a 10-second window per jutsu, pause/resume handling, and no RPS layer. The main integration points are [`src/battle-core.js`](src/battle-core.js), [`src/battle-presentation.js`](src/battle-presentation.js), and [`src/practice.js`](src/practice.js).
+
+The merge preserves the existing High scores, Invite a ninja, leaderboard/QR, Survival, and multiplayer work. Edmund's remaining follow-up is browser and real-camera testing, alignment with the upstream procedural-art prototype, and live publication/testing through the owning Sites workspace for this project.
 
 ## Practice Mode
 
@@ -84,7 +98,7 @@ Multiplayer adds two-player private rooms with six-character codes, invitation l
 
 The lobby and duel use the `multiplayer_rooms` D1 table and `/api/multiplayer/{create,join,match,state,ready,score,leave}`. Queue claim and room creation run in one atomic D1 batch to prevent double pairing. Room codes only permit joining an empty slot; player credentials are separate random tokens held in session storage and never returned to opponents. State refreshes every 700 ms; attacks are submitted immediately in sequence, and the next local jutsu is available without waiting for an acknowledgement or audio. Refreshing restores the room, and leaving ends it for both players. Sixty seconds without a player's heartbeat closes the room; waiting rooms and inactive duels expire after ten minutes. This implementation is for casual play: webcam classification remains client-side and is not cheat-proof, and HTTP polling adds network latency. Optional opponent video is shared over WebRTC; video and microphone recordings are never stored.
 
-Single Player remains owned by the teammate. Its agreed battle rule is also a five-hit health bar; no Single Player logic was added here.
+Single Player is integrated from main and uses its own health-based battle logic and presentation.
 
 
 ## Battle presentation and camera sharing
@@ -94,3 +108,4 @@ The `.battle-layout` class keeps the local camera and signs in the left half and
 Multiplayer uses an ordered `AttackQueue`: confirmed server results decide health and winner, while the player can weave the next sequence immediately. A queued attack is retried with the same sequential count, so uncertain responses cannot duplicate damage.
 
 Each player chooses camera sharing in the lobby. `peer-camera.js` negotiates video-only WebRTC with the matched player via member-authenticated `/signal` requests. A data channel sends live weave progress, with server-polled progress as fallback. The server stores only connection descriptions and short hand-sign metadata, not camera frames. Camera connections close when leaving, stopping the camera, or ending a match. Direct connections use STUN; restrictive networks may require a TURN relay. Optional hosted environment variables `TURN_URL`, `TURN_USERNAME`, and `TURN_CREDENTIAL` enable a configured relay. None is provisioned by default. Sign recognition and duels work when remote video cannot connect.
+
