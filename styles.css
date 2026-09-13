@@ -133,6 +133,44 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 .casting.clone .jutsu-effect { background: radial-gradient(circle,#fff,#ddd9 35%,transparent 70%); }
 
 .casting.wind .jutsu-effect { background: radial-gradient(circle,#f0fff7,#80e6ae99 35%,transparent 70%); }
+.fireball-vfx { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; overflow: hidden; }
+.fireball-light, .fireball-flare { position: absolute; inset: 14% 12%; border-radius: 50%; pointer-events: none; }
+.fireball-light { background: radial-gradient(ellipse at 54% 48%, #ffd36c66 0, #ff7c2c30 35%, transparent 70%); filter: blur(12px); opacity: .72; }
+.fireball-flare { background: radial-gradient(circle, #fff4bd 0, #ff8a2dce 18%, #ff4a1838 42%, transparent 68%); opacity: 0; transform: scale(.2); }
+.fireball-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; mix-blend-mode: screen; filter: saturate(1.15) drop-shadow(0 0 13px #ff7f2c80); opacity: 0; }
+.fireball-frame-b { transform: translateX(.35%); }
+.fireball-embers { position: absolute; inset: 12% 20%; pointer-events: none; }
+.fireball-embers i { position: absolute; width: 4px; height: 8px; border-radius: 60% 40% 60% 40%; background: #ffd777; box-shadow: 0 0 7px #ff7b22; opacity: 0; }
+.fireball-embers i:nth-child(1) { left: 9%; bottom: 16%; --ember-x: -18px; --ember-delay: 0ms; }
+.fireball-embers i:nth-child(2) { left: 28%; bottom: 7%; --ember-x: 10px; --ember-delay: 130ms; }
+.fireball-embers i:nth-child(3) { left: 61%; bottom: 15%; --ember-x: -5px; --ember-delay: 240ms; }
+.fireball-embers i:nth-child(4) { left: 76%; bottom: 5%; --ember-x: 21px; --ember-delay: 80ms; }
+.fireball-embers i:nth-child(5) { left: 46%; bottom: 24%; --ember-x: 12px; --ember-delay: 320ms; }
+.fireball-ready .fireball-vfx { opacity: .62; }
+.fireball-ready .fireball-light { opacity: .9; }
+.fireball-rising .fireball-embers i { animation: fireball-ember-rise 850ms ease-out var(--ember-delay) infinite; }
+.fireball-cast .fireball-vfx, .fireball-impact .fireball-vfx, .fireball-fade .fireball-vfx { opacity: 1; }
+.fireball-cast .fireball-frame-a, .fireball-cast .fireball-frame-b { opacity: .78; }
+.fireball-impact .fireball-frame-a, .fireball-fade .fireball-frame-a { opacity: .78; }
+.fireball-flicker .fireball-frame-a { animation: fireball-pose-a 160ms steps(1, end) infinite; }
+.fireball-flicker .fireball-frame-b { animation: fireball-pose-b 160ms steps(1, end) infinite; }
+.fireball-cast .fireball-flare { animation: fireball-cast-flare 520ms ease-out both; }
+.fireball-impact .fireball-flare { animation: fireball-impact-flare 640ms ease-out both; }
+.fireball-cast .sprite-space { animation: fireball-recoil 1.45s ease-out both; }
+.fireball-cast #sprite, .fireball-impact #sprite { filter: drop-shadow(0 8px 5px #11221890) drop-shadow(0 0 20px #ff8b3566); }
+.fireball-fade .fireball-vfx { animation: fireball-vfx-fade 280ms ease-out both; }
+@keyframes fireball-pose-a { 0%,49.99% { opacity: .82; } 50%,100% { opacity: 0; } }
+@keyframes fireball-pose-b { 0%,49.99% { opacity: 0; } 50%,100% { opacity: .82; } }
+@keyframes fireball-ember-rise { 0% { opacity: 0; transform: translate3d(0, 8px, 0) scale(.7); } 25% { opacity: .8; } 100% { opacity: 0; transform: translate3d(var(--ember-x), -32px, 0) scale(.2); } }
+@keyframes fireball-impact-flare { 0% { opacity: 0; transform: scale(.25); } 18% { opacity: .95; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1.8); } }
+@keyframes fireball-cast-flare { 0% { opacity: 0; transform: scale(.4); } 22% { opacity: .78; transform: scale(1); } 100% { opacity: 0; transform: scale(1.45); } }
+@keyframes fireball-recoil { 0%,100% { transform: translateX(0); } 18% { transform: translateX(-1.3vw) scale(.985); } 42% { transform: translateX(2.2vw) scale(1.015); } 62% { transform: translateX(-.5vw); } }
+@keyframes fireball-vfx-fade { from { opacity: 1; } to { opacity: 0; } }
+.fireball-reduced .sprite-space { animation: none; }
+.fireball-reduced .fireball-frame-a { opacity: .82; }
+.fireball-reduced .fireball-frame-b, .fireball-reduced .fireball-embers { display: none; }
+.fireball-reduced .fireball-light { opacity: .9; }
+.fireball-reduced.fireball-impact .fireball-flare { animation: fireball-impact-flare 360ms ease-out both; }
 #survival-timer { color: #ffdd82; background: #102020ee; padding: 6px 10px; border: 1px solid #d6b465; border-radius: 4px; font-size: clamp(16px,3vmin,26px); font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; }
 #survival-timer.urgent { color: #ff8c76; border-color: #ff8c76; }
 #survival-jutsu { margin-left: auto; max-width: 48%; font-size: clamp(12px,2vmin,16px); padding: 6px 10px; background: #142223ec; border-radius: 4px; }
