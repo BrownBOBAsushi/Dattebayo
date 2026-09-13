@@ -51,9 +51,10 @@ let battleClockHandle;
 let battleCalloutTimer;
 let terminalFeedbackTimer;
 const presentation = createBattlePresentation($('single-arena'), () => battleState);
-const multiplayerVfx = createMultiplayerVfx($('arena'), {
+const multiplayerVfx = createMultiplayerVfx($('fire-target-opponent'), {
   reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
 });
+const incomingFireVfx = createMultiplayerVfx($('fire-target-you'), { reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false });
 document.querySelectorAll('.fireball-frame').forEach(frame => { if (frame.decode) frame.decode().catch(() => {}); });
 function resetMultiplayerCastTracking() {
   multiplayerAcknowledgedScore = 0;
@@ -71,7 +72,8 @@ function acknowledgeMultiplayerCasts(score) {
   for (let index = multiplayerAcknowledgedScore + 1; index <= acknowledged; index++) {
     const cast = multiplayerCastByIndex.get(index);
     multiplayerCastByIndex.delete(index);
-    if (cast === multiplayerLatestCast && cast.element === 'fireball') multiplayerVfx.impact();
+    const jutsu = JUTSU[matchRoom()?.sequence[index - 1]];
+    if (jutsu?.type === 'fire') multiplayerVfx.cast('fireball');
   }
   multiplayerAcknowledgedScore = acknowledged;
 }
@@ -262,7 +264,6 @@ async function castJutsu() {
   $('arena').classList.add('casting');
   $('arena').classList.add(completedJutsu.element);
   if (mode === 'multiplayer') {
-    multiplayerVfx.cast(completedJutsu.element);
     sound.complete(completedJutsu.voice).catch(() => {});
     reportAttack();
     trackMultiplayerCast(completedJutsu.element, localMatchScore());
@@ -294,7 +295,6 @@ function acceptPrediction(label, score, now, revision = selectionRevision) {
   if (!running || revision !== selectionRevision || (mode === 'multiplayer' && !matchCanPlay())) return;
   if (mode === 'single' && battleState.phase !== 'active') return;
   if (mode === 'survival' && (!survival || survival.ended || remainingTime(survival, performance.now()) === 0)) { endSurvival('Time’s up!'); return; }
-  if (mode === 'multiplayer') multiplayerVfx.prepare(selected().element, state.hold.progress || 0);
   const oldIndex = state.index;
   state = detectSign(state,{label,score,now},selected().signs);
   if (mode === 'multiplayer') shareWeave(state.index, label || null);
@@ -422,7 +422,7 @@ function stopCamera({ preserveBattleFeedback = false } = {}) {
   pauseSinglePlayer();
   if (mode === 'single' && !preserveBattleFeedback) { presentation.stop(); presentation.clear(); }
   if (!preserveBattleFeedback) { clearTimeout(battleCalloutTimer); $('single-callout').classList.remove('show'); }
-  if (mode === 'multiplayer') multiplayerVfx.cancel();
+  // Impact feedback completes even when the final hit stops the camera.
   if (mode === 'multiplayer') resetMultiplayerCastTracking();
   cameraWanted = false;
   generation++;
@@ -465,7 +465,7 @@ async function processFrame(current) {
 }
 function route() {
   stopCamera();
-  multiplayerVfx.cancel();
+  multiplayerVfx.cancel(); incomingFireVfx.cancel();
   clearInterval(clockHandle);
   clearTimeout(battleResultTimer);
   resetMultiplayerCastTracking();
@@ -509,6 +509,7 @@ function route() {
     setCharacter(matchRoom().role === 'host' ? 'sasuke' : 'naruto');
     $('sasuke-player-label').textContent = `Sasuke · ${matchRoom().role === 'host' ? 'You' : 'Opponent'}`;
     $('naruto-player-label').textContent = `Naruto · ${matchRoom().role === 'guest' ? 'You' : 'Opponent'}`;
+    multiplayerAcknowledgedScore = matchScore();
     opponentProgress = -1;
     opponentAttacks = matchRoom().players[matchRoom().role === 'host' ? 1 : 0].score;
     battleSprites.start();
@@ -567,14 +568,17 @@ window.addEventListener('multiplayer:update', () => {
   if (mode !== 'multiplayer') return;
   const player = matchRoom()?.players[matchRoom().role === 'host' ? 1 : 0];
   if (player) {
-    for (; opponentAttacks < player.score; opponentAttacks++) battleSprites.attack(character === 'sasuke' ? 'naruto' : 'sasuke');
+    for (; opponentAttacks < player.score; opponentAttacks++) {
+      battleSprites.attack(character === 'sasuke' ? 'naruto' : 'sasuke');
+      if (JUTSU[matchRoom().sequence[opponentAttacks]]?.type === 'fire') incomingFireVfx.cast('fireball');
+    }
     renderOpponent();
   }
   acknowledgeMultiplayerCasts(matchScore());
   if (['finished','closed'].includes(matchRoom()?.status)) {
     clearInterval(clockHandle); stopCamera();
     clearTimeout(battleResultTimer);
-    battleResultTimer=setTimeout(()=>{if(mode==='multiplayer')$('mp-finish').hidden=false;},battleSprites.remainingMs()+100);
+    battleResultTimer=setTimeout(()=>{if(mode==='multiplayer')$('mp-finish').hidden=false;},Math.max(battleSprites.remainingMs(), 1730)+100);
     return;
   }
   // Acknowledgements never reset an already-started local sequence.

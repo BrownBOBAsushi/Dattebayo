@@ -300,3 +300,8 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 .training-layout .sign-meta { font-size: clamp(14px,2.6vh,22px); }
 .training-layout #sound-toggle { flex-shrink: 0; }
 @media(max-width:600px) { .training-layout .camera-toolbar { gap: 5px; flex-wrap: wrap; } .training-layout #sound-toggle { font-size: 11px; padding: 5px; } }
+
+.fire-target { position: fixed; top: 0; bottom: 0; width: 50%; z-index: 30; pointer-events: none; overflow: hidden; }
+.fire-target-you { left: 0; }
+.fire-target-opponent { right: 0; }
+.fire-target .fireball-frame { mix-blend-mode: normal; }

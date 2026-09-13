@@ -100,10 +100,17 @@ test('non-fire jutsus do not activate the fireball presentation', () => {
   assert.equal(vfx.impact(), false);
 });
 
-test('the Fireball layer is an accessible arena child and the controller owns that arena root', () => {
-  assert.match(indexSource, /<div id="arena" class="arena">[\s\S]*<div id="fireball-vfx" class="fireball-vfx" aria-hidden="true">/);
-  assert.ok(indexSource.indexOf('id="fireball-vfx"') < indexSource.indexOf('class="sprite-space"'));
-  assert.match(indexSource, /<img class="fireball-frame fireball-frame-a" src="\.\/assets\/effects\/fireball-frame\.png" alt="">/);
-  assert.match(indexSource, /<img class="fireball-frame fireball-frame-b" src="\.\/assets\/effects\/fireball-frame-02\.png" alt="">/);
-  assert.match(practiceSource, /createMultiplayerVfx\(\$\('arena'\)/);
+test('simultaneous target effects remain independent', () => {
+  const clock = fakeClock();
+  const you = fakeRoot(), opponent = fakeRoot();
+  const options = { setTimeout: clock.setTimeout, clearTimeout: clock.clearTimeout };
+  const incoming = createMultiplayerVfx(you, options);
+  const outgoing = createMultiplayerVfx(opponent, options);
+  incoming.cast('fireball');
+  assert.equal(opponent.classes.size, 0);
+  outgoing.cast('fireball');
+  incoming.cancel();
+  assert.equal(you.classes.size, 0);
+  assert.equal(opponent.classList.contains('fireball-cast'), true);
+  outgoing.cancel();
 });

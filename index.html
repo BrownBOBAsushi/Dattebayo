@@ -56,13 +56,6 @@
       <div id="arena" class="arena">
         <div class="arena-toolbar"><div class="character-options" role="group" aria-label="Select your character"><button data-character="naruto" aria-pressed="false">Naruto</button><button data-character="sasuke" aria-pressed="true">Sasuke</button></div><button class="quiet" id="sound-toggle" aria-pressed="false">Enable sound</button></div>
         <div class="arena-caption"><p id="character-name">SASUKE UCHIHA</p><h2 id="action-label">Ready to train.</h2><p id="action-hint" class="sr-only">Complete all three signs to release your jutsu.</p></div>
-        <div id="fireball-vfx" class="fireball-vfx" aria-hidden="true">
-          <div class="fireball-light"></div>
-          <div class="fireball-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-          <img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt="">
-          <img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt="">
-          <span class="fireball-flare"></span>
-        </div>
         <div id="battle-stage" class="battle-stage" hidden aria-label="Sasuke on the left and Naruto on the right"><span id="sasuke-player-label" class="fighter-label sasuke-label"></span><span id="naruto-player-label" class="fighter-label naruto-label"></span><div class="fighter fighter-sasuke" data-fighter="sasuke" role="img" aria-label="Sasuke attack animation"></div><div class="fighter fighter-naruto" data-fighter="naruto" role="img" aria-label="Naruto attack animation"></div></div>
         <div class="sprite-space"><img id="sprite" alt="Sasuke in a ready stance"><div id="jutsu-effect" class="jutsu-effect" aria-hidden="true"></div></div>
         <div class="arena-footer"><p id="instruction" role="status">Starting your camera…</p><span id="sound-status" role="status"></span><span id="completed-count">0 jutsu performed</span></div>
@@ -84,6 +77,8 @@
   <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
 </dialog>
 <dialog id="invite-dialog" class="game-dialog invite-dialog" aria-labelledby="invite-title"><button class="quiet dialog-close" data-close>Close</button><h2 id="invite-title">Enter the Ninja Academy</h2><img src="./assets/game-qr.svg" alt="QR code to open Dattebayo"><p>Scan to play on your phone.</p><a class="primary" href="./assets/game-qr.svg" download="dattebayo-qr.svg">Download QR</a></dialog>
+<div id="fire-target-you" class="fire-target fire-target-you" aria-hidden="true"><div class="fireball-vfx"><img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt=""><img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt=""></div></div>
+<div id="fire-target-opponent" class="fire-target fire-target-opponent" aria-hidden="true"><div class="fireball-vfx"><img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt=""><img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt=""></div></div>
 <div id="match-countdown" hidden role="status" aria-live="polite"></div>
 <dialog id="intro-dialog" aria-labelledby="intro-title">
   <p class="intro-kicker">WELCOME TO THE NINJA ACADEMY</p>
