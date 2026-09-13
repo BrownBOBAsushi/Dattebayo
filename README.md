@@ -109,3 +109,8 @@ Multiplayer uses an ordered `AttackQueue`: confirmed server results decide healt
 
 Each player chooses camera sharing in the lobby. `peer-camera.js` negotiates video-only WebRTC with the matched player via member-authenticated `/signal` requests. A data channel sends live weave progress, with server-polled progress as fallback. The server stores only connection descriptions and short hand-sign metadata, not camera frames. Camera connections close when leaving, stopping the camera, or ending a match. Direct connections use STUN; restrictive networks may require a TURN relay. Optional hosted environment variables `TURN_URL`, `TURN_USERNAME`, and `TURN_CREDENTIAL` enable a configured relay. None is provisioned by default. Sign recognition and duels work when remote video cannot connect.
 
+## Temporarily archived health battle
+
+The former health-based Single Player mode is disabled at the router. Its implementation remains in `src/battle-core.js`, `src/battle-presentation.js`, and the dormant single-mode branches in `src/practice.js` for restoration. The complete pre-archive version is commit `a34d177696d409d78115aee4b88eb8172ecfafe2`.
+
+The homepage now offers Single Player (the former Survival countdown and shared high scores), Multi Player, and Practice Mode. Both `#single-player` and legacy `#survival` links open the countdown game; no route enables the archived health battle. Existing scores and the 30-second / +2-seconds-per-jutsu rules are unchanged.

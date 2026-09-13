@@ -16,9 +16,8 @@
     <button id="music-toggle" class="quiet music-toggle" aria-pressed="false">Music pending audio</button>
     <div class="home-title"><p>NINJA ACADEMY</p><h1 id="home-title">DATTE<span>BAYO!</span></h1><span class="home-subtitle">Choose your ninja way.</span></div>
     <nav class="mode-list" aria-label="Game modes">
-      <a href="#single-player" class="mode available"><strong>Single Player</strong><small>Health battle · 10s per jutsu</small></a>
+      <a href="#single-player" class="mode available"><strong>Single Player</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#multiplayer" class="mode available"><strong>Multi Player</strong><small>First to 5 attacks</small></a>
-      <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
     </nav>
     <div class="home-footer"><button class="quiet" data-leaderboard>High scores</button> <button class="quiet" id="invite-open">Invite a ninja · QR</button></div>
@@ -28,8 +27,8 @@
     <div id="mp-entry"><label for="mp-name">Your ninja name</label><input id="mp-name" maxlength="24" autocomplete="nickname" placeholder="Enter your name">
     <div class="mp-actions"><button class="primary" data-mp-enter="create">Create room</button><button class="primary" data-mp-enter="match">Find opponent</button></div>
     <div class="mp-join"><label class="sr-only" for="mp-code">Room code</label><input id="mp-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button class="quiet" data-mp-enter="join">Join room</button></div></div>
-    <div id="mp-waiting" hidden><p id="mp-room-kind"></p><strong id="mp-room-code"></strong><button id="mp-copy" class="quiet">Copy invite link</button><div id="mp-players"></div><div class="mp-actions"><button id="mp-ready" class="primary">Ready · start duel</button><button id="mp-leave" class="quiet">Leave room</button></div></div>
-    <label class="camera-share-option"><input id="mp-share-camera" type="checkbox" checked> Share my camera with my opponent</label><p class="camera-share-note">Video only · no microphone · no recording</p><p id="mp-status" role="status"></p></div>
+    <div id="mp-waiting" hidden><p id="mp-room-kind"></p><strong id="mp-room-code"></strong><button id="mp-copy" class="quiet">Copy invite link</button><div id="mp-players"></div><div class="mp-actions"><button id="mp-ready" class="primary" hidden>Ready · start duel</button><button id="mp-leave" class="quiet">Leave room</button></div></div>
+    <p id="mp-status" role="status"></p></div>
   </section>
   <section id="practice" class="practice" hidden aria-label="Practice Mode">
     <section id="single-battle" class="single-battle-panel" hidden aria-label="Single Player battle">
@@ -47,7 +46,7 @@
         <video id="camera" autoplay muted playsinline aria-label="Your camera, mirrored"></video>
         <div id="camera-placeholder"><strong>Practice Mode</strong><p>Keep both hands in view.</p><button id="enable-camera" class="primary">Retry camera</button></div>
       </div>
-      <div class="opponent-camera-wrap" id="opponent-camera-wrap" hidden><video id="opponent-camera" autoplay muted playsinline aria-label="Opponent camera"></video><p id="opponent-camera-status" role="status">Waiting for opponent camera…</p></div>
+      <div class="opponent-camera-wrap" id="opponent-camera-wrap" hidden><div id="opponent-fallback"><div class="fallback-shinobi" aria-hidden="true"></div><strong>Future Hokage<br>in the Making</strong></div></div>
       <div class="camera-toolbar"><a href="#home" class="back">← Home</a><span id="camera-status">Camera off</span><span id="survival-timer" hidden aria-label="Time remaining">30.0s</span><label class="jutsu-picker"><span class="sr-only">Select jutsu</span><select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label><span id="survival-jutsu" hidden></span></div>
       <div id="mp-hud" hidden><div><span id="mp-you-name">You</span><progress id="mp-you-health" max="5" value="5"></progress><span id="mp-you-hp">5/5 HP</span></div><div><span id="mp-them-name">Opponent</span><progress id="mp-them-health" max="5" value="5"></progress><span id="mp-them-hp">5/5 HP</span></div><p id="mp-battle-status" role="status"></p><button id="mp-battle-exit" class="quiet">Leave match</button></div>
       <div class="camera-feedback"><p id="camera-message" role="status">Camera stays in your browser. Nothing is recorded.</p><p id="error" class="error" role="alert" hidden></p></div>
@@ -61,20 +60,6 @@
       <div id="arena" class="arena">
         <div class="arena-toolbar"><div class="character-options" role="group" aria-label="Select your character"><button data-character="naruto" aria-pressed="false">Naruto</button><button data-character="sasuke" aria-pressed="true">Sasuke</button></div><button class="quiet" id="sound-toggle" aria-pressed="false">Enable sound</button></div>
         <div class="arena-caption"><p id="character-name">SASUKE UCHIHA</p><h2 id="action-label">Ready to train.</h2><p id="action-hint" class="sr-only">Complete all three signs to release your jutsu.</p></div>
-        <div id="fireball-vfx" class="fireball-vfx" aria-hidden="true">
-          <div class="fireball-light"></div>
-          <div class="fireball-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-          <img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt="">
-          <img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt="">
-          <span class="fireball-flare"></span>
-        </div>
-        <div id="lightning-vfx" class="lightning-vfx" aria-hidden="true">
-          <span class="lightning-corona"></span>
-          <span class="lightning-filaments"></span>
-          <img class="lightning-frame lightning-frame-a" src="./assets/effects/lightning-frame.png" alt="">
-          <img class="lightning-frame lightning-frame-b" src="./assets/effects/lightning-frame-02.png" alt="">
-          <span class="lightning-bloom"></span>
-        </div>
         <div id="battle-stage" class="battle-stage" hidden aria-label="Sasuke on the left and Naruto on the right"><span id="sasuke-player-label" class="fighter-label sasuke-label"></span><span id="naruto-player-label" class="fighter-label naruto-label"></span><div class="fighter fighter-sasuke" data-fighter="sasuke" role="img" aria-label="Sasuke attack animation"></div><div class="fighter fighter-naruto" data-fighter="naruto" role="img" aria-label="Naruto attack animation"></div></div>
         <div class="sprite-space"><img id="sprite" alt="Sasuke in a ready stance"><div id="jutsu-effect" class="jutsu-effect" aria-hidden="true"></div></div>
         <div class="arena-footer"><p id="instruction" role="status">Starting your camera…</p><span id="sound-status" role="status"></span><span id="completed-count">0 jutsu performed</span></div>
@@ -90,12 +75,23 @@
 </main>
 <div id="mp-finish" hidden role="dialog" aria-modal="true" aria-labelledby="mp-finish-title"><div><h2 id="mp-finish-title"></h2><p id="mp-finish-detail"></p><button id="mp-again" class="primary">Back to lobby</button></div></div>
 <dialog id="leaderboard-dialog" class="game-dialog" aria-labelledby="leaderboard-title">
-  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Survival · High scores</h2>
+  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Single Player · High scores</h2>
   <p class="ranking-note">Longest survival wins. Jutsus break ties.</p><p id="leaderboard-status" role="status"></p>
   <table><thead><tr><th>#</th><th>Ninja</th><th>Survived</th><th>Jutsus</th></tr></thead><tbody id="leaderboard-rows"></tbody></table>
   <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
 </dialog>
 <dialog id="invite-dialog" class="game-dialog invite-dialog" aria-labelledby="invite-title"><button class="quiet dialog-close" data-close>Close</button><h2 id="invite-title">Enter the Ninja Academy</h2><img src="./assets/game-qr.svg" alt="QR code to open Dattebayo"><p>Scan to play on your phone.</p><a class="primary" href="./assets/game-qr.svg" download="dattebayo-qr.svg">Download QR</a></dialog>
+<div id="fire-target-you" class="fire-target fire-target-you" aria-hidden="true"><div class="fireball-vfx"><img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt=""><img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt=""></div><div class="lightning-vfx"><span class="lightning-corona"></span><span class="lightning-filaments"></span><img class="lightning-frame lightning-frame-a" src="./assets/effects/lightning-frame.png" alt=""><img class="lightning-frame lightning-frame-b" src="./assets/effects/lightning-frame-02.png" alt=""><span class="lightning-bloom"></span></div></div>
+<div id="fire-target-opponent" class="fire-target fire-target-opponent" aria-hidden="true"><div class="fireball-vfx"><img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt=""><img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt=""></div><div class="lightning-vfx"><span class="lightning-corona"></span><span class="lightning-filaments"></span><img class="lightning-frame lightning-frame-a" src="./assets/effects/lightning-frame.png" alt=""><img class="lightning-frame lightning-frame-b" src="./assets/effects/lightning-frame-02.png" alt=""><span class="lightning-bloom"></span></div></div>
+<div id="match-countdown" hidden role="status" aria-live="polite"></div>
+<dialog id="intro-dialog" aria-labelledby="intro-title">
+  <p class="intro-kicker">WELCOME TO THE NINJA ACADEMY</p>
+  <h2 id="intro-title">Dattebayo!</h2>
+  <p>The game where you can practice to be a Hokage. Improve your sign weaving speed, master three hand signs, and unleash your jutsu!</p>
+  <video id="intro-video" src="./assets/introduction.mp4" autoplay loop muted playsinline preload="auto" aria-label="A short demonstration of hand-sign weaving"></video>
+  <button id="intro-go" class="primary">Let's go!</button>
+</dialog>
+<script type="module" src="./src/introduction.js"></script>
 <script type="module" src="./src/practice.js"></script>
 </body>
 </html>

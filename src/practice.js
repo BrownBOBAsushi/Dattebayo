@@ -1,5 +1,4 @@
 import { BattleSprites } from './battle-sprites.js';
-import { startPeerCamera, stopPeerCamera } from './peer-camera.js';
 import { matchRoom, matchScore, localMatchScore, matchCanPlay, matchJutsu, readyMatch, reportAttack, matchMessage, shareWeave } from './multiplayer.js';
 import { startRankedRun, showRunResult } from './leaderboard.js';
 import { createSurvival, remainingTime, recordSurvivalSign, randomJutsu } from './survival-core.js';
@@ -52,9 +51,10 @@ let battleClockHandle;
 let battleCalloutTimer;
 let terminalFeedbackTimer;
 const presentation = createBattlePresentation($('single-arena'), () => battleState);
-const multiplayerVfx = createMultiplayerVfx($('arena'), {
+const multiplayerVfx = createMultiplayerVfx($('fire-target-opponent'), {
   reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
 });
+const incomingFireVfx = createMultiplayerVfx($('fire-target-you'), { reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false });
 document.querySelectorAll('.fireball-frame, .lightning-frame').forEach(frame => { if (frame.decode) frame.decode().catch(() => {}); });
 function resetMultiplayerCastTracking() {
   multiplayerAcknowledgedScore = 0;
@@ -72,7 +72,11 @@ function acknowledgeMultiplayerCasts(score) {
   for (let index = multiplayerAcknowledgedScore + 1; index <= acknowledged; index++) {
     const cast = multiplayerCastByIndex.get(index);
     multiplayerCastByIndex.delete(index);
-    if (cast === multiplayerLatestCast && (cast.element === 'fireball' || cast.element === 'lightning')) multiplayerVfx.impact();
+    const element = JUTSU[matchRoom()?.sequence[index - 1]]?.element;
+    if (element === 'fireball' || element === 'lightning') {
+      multiplayerVfx.cast(element);
+      multiplayerVfx.impact();
+    }
   }
   multiplayerAcknowledgedScore = acknowledged;
 }
@@ -263,7 +267,6 @@ async function castJutsu() {
   $('arena').classList.add('casting');
   $('arena').classList.add(completedJutsu.element);
   if (mode === 'multiplayer') {
-    multiplayerVfx.cast(completedJutsu.element);
     sound.complete(completedJutsu.voice).catch(() => {});
     reportAttack();
     trackMultiplayerCast(completedJutsu.element, localMatchScore());
@@ -295,7 +298,6 @@ function acceptPrediction(label, score, now, revision = selectionRevision) {
   if (!running || revision !== selectionRevision || (mode === 'multiplayer' && !matchCanPlay())) return;
   if (mode === 'single' && battleState.phase !== 'active') return;
   if (mode === 'survival' && (!survival || survival.ended || remainingTime(survival, performance.now()) === 0)) { endSurvival('Time’s up!'); return; }
-  if (mode === 'multiplayer') multiplayerVfx.prepare(selected().element, state.hold.progress || 0);
   const oldIndex = state.index;
   state = detectSign(state,{label,score,now},selected().signs);
   if (mode === 'multiplayer') shareWeave(state.index, label || null);
@@ -360,10 +362,9 @@ async function startCamera() {
   showError();
   let acquired;
   try {
-    await loadModels();
-    if (current !== generation) return;
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('Open this game using its HTTPS link in Safari or Chrome to enable the camera.');
     $('camera-message').textContent = 'Allow camera access to start practicing.';
-    acquired = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'user'},audio:false });
+    acquired = await navigator.mediaDevices.getUserMedia({ video:{facingMode:{ideal:'user'},width:{ideal:640},height:{ideal:480},frameRate:{ideal:24,max:30}},audio:false });
     if (current !== generation) { acquired.getTracks().forEach(t => t.stop()); return; }
     stream = acquired;
     $('camera').srcObject = stream;
@@ -374,6 +375,9 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
+    await loadModels();
+    if (current !== generation) return;
+    $('camera-message').textContent = 'Keep both hands in frame.';
     if (mode === 'single') {
       battleState = cameraReady(battleState, performance.now());
       presentation.start();
@@ -389,7 +393,6 @@ async function startCamera() {
       beginSurvival(rankedId);
     }
     if (mode === 'multiplayer') {
-      startPeerCamera(stream);
       await readyMatch();
       if (current !== generation) return;
       clearInterval(clockHandle);
@@ -422,10 +425,8 @@ function stopCamera({ preserveBattleFeedback = false } = {}) {
   pauseSinglePlayer();
   if (mode === 'single' && !preserveBattleFeedback) { presentation.stop(); presentation.clear(); }
   if (!preserveBattleFeedback) { clearTimeout(battleCalloutTimer); $('single-callout').classList.remove('show'); }
-  if (mode === 'multiplayer') multiplayerVfx.cancel();
-  if (mode === 'multiplayer') resetMultiplayerCastTracking();
+  // Impact feedback completes even when the final hit stops the camera.
   cameraWanted = false;
-  if (mode === 'multiplayer') stopPeerCamera();
   generation++;
   cancelAnimationFrame(frameHandle);
   stream?.getTracks().forEach(t => t.stop());
@@ -466,13 +467,13 @@ async function processFrame(current) {
 }
 function route() {
   stopCamera();
-  multiplayerVfx.cancel();
+  multiplayerVfx.cancel(); incomingFireVfx.cancel();
   clearInterval(clockHandle);
   clearTimeout(battleResultTimer);
   resetMultiplayerCastTracking();
   survival = null;
   const playing = ['#practice', '#survival', '#single-player', '#battle'].includes(location.hash);
-  mode = location.hash === '#battle' ? 'multiplayer' : location.hash === '#survival' ? 'survival' : location.hash === '#single-player' ? 'single' : 'practice';
+  mode = location.hash === '#battle' ? 'multiplayer' : ['#single-player', '#survival'].includes(location.hash) ? 'survival' : 'practice';
   if (mode === 'single') {
     battleState = createBattle({ jutsuIds: Object.keys(JUTSU) });
     stopBattleClock();
@@ -480,6 +481,7 @@ function route() {
   $('home').hidden = playing || location.hash.startsWith('#multiplayer');
   $('mp-hud').hidden = mode !== 'multiplayer';
   $('practice').classList.toggle('battle-layout', mode === 'multiplayer');
+  $('practice').classList.toggle('training-layout', mode === 'practice' || mode === 'survival');
   $('opponent-camera-wrap').hidden = $('opponent-sequence').hidden = $('battle-stage').hidden = mode !== 'multiplayer';
   if (mode !== 'multiplayer') battleSprites.stop();
   $('practice').hidden = !playing;
@@ -488,9 +490,10 @@ function route() {
   $('single-battle').hidden = mode !== 'single';
   const soundToggle = $('sound-toggle');
   if (mode === 'single') $('single-sound-slot').append(soundToggle);
+  else if (mode === 'practice' || mode === 'survival') document.querySelector('.camera-toolbar').append(soundToggle);
   else document.querySelector('.arena-toolbar').append(soundToggle);
-  $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode');
-  $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode';
+  $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode');
+  $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode';
   $('survival-result').hidden = true;
   $('single-result').hidden = true;
   $('survival-timer').hidden = mode !== 'survival';
@@ -508,6 +511,7 @@ function route() {
     setCharacter(matchRoom().role === 'host' ? 'sasuke' : 'naruto');
     $('sasuke-player-label').textContent = `Sasuke · ${matchRoom().role === 'host' ? 'You' : 'Opponent'}`;
     $('naruto-player-label').textContent = `Naruto · ${matchRoom().role === 'guest' ? 'You' : 'Opponent'}`;
+    multiplayerAcknowledgedScore = matchScore();
     opponentProgress = -1;
     opponentAttacks = matchRoom().players[matchRoom().role === 'host' ? 1 : 0].score;
     battleSprites.start();
@@ -566,14 +570,21 @@ window.addEventListener('multiplayer:update', () => {
   if (mode !== 'multiplayer') return;
   const player = matchRoom()?.players[matchRoom().role === 'host' ? 1 : 0];
   if (player) {
-    for (; opponentAttacks < player.score; opponentAttacks++) battleSprites.attack(character === 'sasuke' ? 'naruto' : 'sasuke');
+    for (; opponentAttacks < player.score; opponentAttacks++) {
+      battleSprites.attack(character === 'sasuke' ? 'naruto' : 'sasuke');
+      const element = JUTSU[matchRoom().sequence[opponentAttacks]]?.element;
+      if (element === 'fireball' || element === 'lightning') {
+        incomingFireVfx.cast(element);
+        incomingFireVfx.impact();
+      }
+    }
     renderOpponent();
   }
   acknowledgeMultiplayerCasts(matchScore());
   if (['finished','closed'].includes(matchRoom()?.status)) {
     clearInterval(clockHandle); stopCamera();
     clearTimeout(battleResultTimer);
-    battleResultTimer=setTimeout(()=>{if(mode==='multiplayer')$('mp-finish').hidden=false;},battleSprites.remainingMs()+100);
+    battleResultTimer=setTimeout(()=>{if(mode==='multiplayer')$('mp-finish').hidden=false;},Math.max(battleSprites.remainingMs(), 1730)+100);
     return;
   }
   // Acknowledgements never reset an already-started local sequence.

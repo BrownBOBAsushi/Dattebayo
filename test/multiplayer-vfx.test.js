@@ -254,17 +254,41 @@ test('chronological acknowledgements around cast and fade boundaries never stran
   }
 });
 
-test('the Fireball layer is an accessible arena child and the controller owns that arena root', () => {
-  assert.match(indexSource, /<div id="arena" class="arena">[\s\S]*<div id="fireball-vfx" class="fireball-vfx" aria-hidden="true">/);
-  assert.ok(indexSource.indexOf('id="fireball-vfx"') < indexSource.indexOf('class="sprite-space"'));
+test('both defender targets contain fire and lightning layers with independent controllers', () => {
+  for (const target of ['fire-target-you', 'fire-target-opponent']) {
+    const targetStart = indexSource.indexOf(`id="${target}"`);
+    const nextTarget = indexSource.indexOf('<div id="', targetStart + 1);
+    const targetSource = indexSource.slice(targetStart, nextTarget < 0 ? indexSource.length : nextTarget);
+    assert.ok(targetStart >= 0);
+    assert.match(targetSource, /class="fireball-vfx"/);
+    assert.match(targetSource, /class="lightning-vfx"/);
+    assert.match(targetSource, /class="lightning-corona"/);
+    assert.match(targetSource, /class="lightning-bloom"/);
+  }
   assert.match(indexSource, /<img class="fireball-frame fireball-frame-a" src="\.\/assets\/effects\/fireball-frame\.png" alt="">/);
   assert.match(indexSource, /<img class="fireball-frame fireball-frame-b" src="\.\/assets\/effects\/fireball-frame-02\.png" alt="">/);
-  assert.match(indexSource, /<div id="lightning-vfx" class="lightning-vfx" aria-hidden="true">/);
   assert.match(indexSource, /<img class="lightning-frame lightning-frame-a" src="\.\/assets\/effects\/lightning-frame\.png" alt="">/);
   assert.match(indexSource, /<img class="lightning-frame lightning-frame-b" src="\.\/assets\/effects\/lightning-frame-02\.png" alt="">/);
   assert.match(indexSource, /rel="preload" as="image" href="\.\/assets\/effects\/lightning-frame\.png"/);
   assert.match(indexSource, /rel="preload" as="image" href="\.\/assets\/effects\/lightning-frame-02\.png"/);
   assert.match(practiceSource, /\.fireball-frame, \.lightning-frame/);
-  assert.match(practiceSource, /cast\.element === 'lightning'/);
-  assert.match(practiceSource, /createMultiplayerVfx\(\$\('arena'\)/);
+  assert.match(practiceSource, /createMultiplayerVfx\(\$\('fire-target-opponent'\)/);
+  assert.match(practiceSource, /createMultiplayerVfx\(\$\('fire-target-you'\)/);
+  assert.doesNotMatch(practiceSource, /createMultiplayerVfx\(\$\('arena'\)/);
+  assert.doesNotMatch(practiceSource, /if \(mode === 'multiplayer'\) resetMultiplayerCastTracking\(\)/);
+});
+
+test('simultaneous target effects remain independent', () => {
+  const clock = fakeClock();
+  const you = fakeRoot(), opponent = fakeRoot();
+  const options = { setTimeout: clock.setTimeout, clearTimeout: clock.clearTimeout };
+  const incoming = createMultiplayerVfx(you, options);
+  const outgoing = createMultiplayerVfx(opponent, options);
+  incoming.cast('fireball');
+  assert.equal(opponent.classes.size, 0);
+  outgoing.cast('fireball');
+  incoming.cancel();
+  assert.equal(you.classes.size, 0);
+  assert.equal(opponent.classList.contains('fireball-cast'), true);
+  outgoing.cancel();
 });

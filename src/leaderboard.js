@@ -1,3 +1,4 @@
+import { randomNinjaName } from './ninja-name.js';
 const $ = id => document.getElementById(id);
 let pendingRun = null;
 let page = 0;
@@ -12,6 +13,7 @@ export async function startRankedRun() {
   try { return (await api('/api/runs', {})).id; } catch { return null; }
 }
 export function showRunResult(run, timedOut) {
+  $('player-name').value ||= randomNinjaName();
   pendingRun = timedOut && run.rankedId ? { id: run.rankedId, signs: run.signs, jutsus: run.jutsus } : null;
   $('score-form').hidden = !pendingRun;
   $('score-save').disabled = false;

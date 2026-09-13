@@ -1,5 +1,7 @@
+import { randomNinjaName } from './ninja-name.js';
 import { AttackQueue } from './attack-queue.js';
 const $=id=>document.getElementById(id);
+$('mp-name').value ||= randomNinjaName();
 let token;
 try {token=sessionStorage.getItem('ninja-match-token');} catch {}
 if(!token) token=crypto.randomUUID();
@@ -47,6 +49,7 @@ function apply(next) {
     $('mp-finish-detail').textContent=room.status==='closed'?'A player left, disconnected, or the room expired.':`${room.players[mine].score} attacks landed · ${room.players[opponent].score} received`;
     clearTimeout(timer);
   }
+  if (room.players.every(player=>player.name) && ['waiting','playing'].includes(room.status) && location.hash.startsWith('#multiplayer')) location.hash='#battle';
   window.dispatchEvent(new CustomEvent('multiplayer:update'));
 }
 async function poll() {
@@ -105,4 +108,12 @@ function route(){
 window.addEventListener('hashchange',route);
 route();
 // Restore a room after a reload without using the room code as a player credential.
-if(location.hash.startsWith('#multiplayer')||location.hash==='#battle') matchRequest('state').then(result=>{apply(result.room);timer=setTimeout(poll,1000);if(location.hash==='#battle')location.hash='#multiplayer';}).catch(()=>{if(location.hash==='#battle')location.hash='#multiplayer';});
+if(location.hash.startsWith('#multiplayer')||location.hash==='#battle') matchRequest('state').then(result=>{apply(result.room);timer=setTimeout(poll,1000);if(location.hash==='#battle'&&!result.room.players.every(player=>player.name))location.hash='#multiplayer';}).catch(()=>{if(location.hash==='#battle'&&!result.room.players.every(player=>player.name))location.hash='#multiplayer';});
+
+setInterval(() => {
+  const overlay=$('match-countdown');
+  const remaining=room?.startsAt-Date.now()-clockOffset;
+  const show=location.hash==='#battle'&&room?.status==='playing'&&remaining>-650;
+  overlay.hidden=!show;
+  if(show) overlay.textContent=remaining>0?String(Math.ceil(remaining/1000)):'BEGIN!';
+},50);
