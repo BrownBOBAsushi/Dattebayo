@@ -6,17 +6,17 @@ const roomFor = (db,token) => db.prepare('SELECT * FROM multiplayer_rooms WHERE 
 function publicRoom(room,token,now) {
   const host = room.host_token === token;
   return {code:room.code,kind:room.kind,status:room.status,role:host?'host':'guest',serverNow:now,startsAt:room.starts_at,attacksToWin:5,
-    players:[{name:room.host_name,ready:!!room.host_ready,score:room.host_score,online:now-room.host_seen<25000},{name:room.guest_name,ready:!!room.guest_ready,score:room.guest_score,online:room.guest_seen!==null&&now-room.guest_seen<25000}],
+    players:[{name:room.host_name,ready:!!room.host_ready,score:room.host_score,online:now-room.host_seen<25000,progress:room.host_progress?JSON.parse(room.host_progress):null},{name:room.guest_name,ready:!!room.guest_ready,score:room.guest_score,online:room.guest_seen!==null&&now-room.guest_seen<25000,progress:room.guest_progress?JSON.parse(room.guest_progress):null}],
     sequence:JSON.parse(room.sequence)};
 }
-export async function multiplayer(request,db) {
+export async function multiplayer(request,db,env={}) {
   try {
     const url = new URL(request.url), now=Date.now();
     if(request.method!=='POST') return json({error:'Use POST'},405);
     if(request.headers.get('Origin') && request.headers.get('Origin')!==url.origin) return json({error:'Invalid origin'},403);
     const token=request.headers.get('Authorization')?.replace(/^Bearer /,'');
     if(!token || !/^[a-f0-9-]{36}$/i.test(token)) fail('Please reopen Multiplayer.',401);
-    const raw=await request.text(); if(raw.length>1024) fail('Request too large');
+    const raw=await request.text(); if(raw.length>(url.pathname.endsWith('/signal')?65536:1024)) fail('Request too large');
     let body; try {body=JSON.parse(raw || '{}');} catch {fail('Invalid request');}
     const action=url.pathname.split('/').at(-1);
     let room=await roomFor(db,token);
@@ -26,7 +26,7 @@ export async function multiplayer(request,db) {
       room=await roomFor(db,token);
     }
     if(action==='leave') {
-      if(room) await db.prepare("UPDATE multiplayer_rooms SET status='closed' WHERE code=? AND status IN ('waiting','playing')").bind(room.code).run();
+      if(room) await db.prepare("UPDATE multiplayer_rooms SET status='closed',host_signal=NULL,guest_signal=NULL WHERE code=? AND status IN ('waiting','playing')").bind(room.code).run();
       return json({left:true});
     }
     if(['create','join','match'].includes(action)) {
@@ -51,6 +51,28 @@ export async function multiplayer(request,db) {
     }
     if(!room) fail('Room not found. Create or join a room.',404);
     const role=room.host_token===token?'host':'guest';
+    if(action==='signal') {
+      if(!room.guest_token || !['waiting','playing'].includes(room.status)) fail('Camera sharing is only available in an active two-player room.',409);
+      if(body.description) {
+        const signal=body.description;
+        if(!(role==='host'?signal.type==='offer':['answer','restart'].includes(signal.type)) || typeof signal.sdp!=='string' || signal.sdp.length>50000 || (signal.type==='restart'?signal.sdp!=='':!signal.sdp.startsWith('v=0')) || typeof signal.id!=='string' || !/^[a-f0-9-]{36}$/i.test(signal.id)) fail('Invalid camera negotiation.');
+        await db.prepare(`UPDATE multiplayer_rooms SET ${role}_signal=? WHERE code=? AND status IN ('waiting','playing')`).bind(JSON.stringify(signal),room.code).run();
+      }
+      room=await roomFor(db,token);
+      const remote=role==='host'?room.guest_signal:room.host_signal;
+      return json({description:remote?JSON.parse(remote):null});
+    }
+    if(action==='ice') {
+      const iceServers=[{urls:'stun:stun.l.google.com:19302'}];
+      if(env.TURN_URL && env.TURN_USERNAME && env.TURN_CREDENTIAL) iceServers.push({urls:env.TURN_URL,username:env.TURN_USERNAME,credential:env.TURN_CREDENTIAL});
+      return json({iceServers});
+    }
+    if(body.weave && ['state','score'].includes(action)) {
+      const {index,jutsuIndex,label}=body.weave;
+      if(!Number.isInteger(index)||index<0||index>3||!Number.isInteger(jutsuIndex)||jutsuIndex<0||jutsuIndex>4||!(label===null||['rat','ox','tiger','hare','dragon','serpent','horse','ram','monkey','bird','dog','boar'].includes(label))) fail('Invalid hand-sign progress.');
+      await db.prepare(`UPDATE multiplayer_rooms SET ${role}_progress=? WHERE code=? AND status='playing'`).bind(JSON.stringify({index,jutsuIndex,label,updatedAt:now}),room.code).run();
+    }
+
     if(action==='ready' && room.status==='waiting') await db.prepare(`UPDATE multiplayer_rooms SET ${role}_ready=1 WHERE code=? AND status='waiting'`).bind(room.code).run();
     if(action==='score') {
       const count=body.count;
@@ -62,6 +84,7 @@ export async function multiplayer(request,db) {
       await db.prepare("UPDATE multiplayer_rooms SET status='playing',starts_at=? WHERE code=? AND status='waiting' AND host_ready=1 AND guest_ready=1 AND guest_token IS NOT NULL AND host_seen>? AND guest_seen>?").bind(now+3000,room.code,now-25000,now-25000).run();
     }
     room=await roomFor(db,token);
+    if(['finished','closed'].includes(room.status)) await db.prepare('UPDATE multiplayer_rooms SET host_signal=NULL,guest_signal=NULL WHERE code=?').bind(room.code).run();
     return json({room:publicRoom(room,token,now)});
   } catch(error) { if(!error.status) console.error('Multiplayer request failed',error); return json({error:error.status?error.message:'Multiplayer unavailable. Please retry.'},error.status||503); }
 }

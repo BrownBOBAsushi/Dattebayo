@@ -250,3 +250,26 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 #mp-hud progress { width: 100%; height: 12px; grid-column: 1/-1; accent-color: #8fdb63; }#mp-hud span:last-child { grid-column: 2; grid-row: 1; }#mp-hud p { margin: 2px 0; font-size: 14px; text-shadow: 0 1px 3px #000; }#mp-hud button { pointer-events: auto; justify-self: end; }
 #mp-finish { position: fixed; inset: 0; z-index: 30; background: #091b16f5; display: grid; place-items: center; text-align: center; padding: 20px; }#mp-finish h2 { color: #ffb85e; font-size: clamp(28px,7vmin,60px); }
 @media(max-height:550px) { .mp-card { padding: 10px 18px; }.mp-card p { margin: 5px 0; }.mp-card input { padding: 7px; }.mp-card label { margin: 5px 0; }.mp-actions,.mp-join { margin-top: 6px; }#mp-room-code { margin: 5px; }#mp-hud { top: 35px; }#mp-hud > div { padding: 3px 6px; font-size: 12px; }#mp-hud progress { height: 8px; } }
+.camera-share-option { display: flex !important; justify-content: center; align-items: center; gap: 8px; font-size: 14px; }.mp-card .camera-share-option input { width: auto; }.camera-share-note { color: #c3cdbb; font-size: 12px !important; }
+/* Both battle modes can use this class: local player left, opponent right. */
+.battle-layout .camera-wrap { right: 50%; border-right: 1px solid #8a9a7666; }
+.opponent-camera-wrap { position: absolute; inset: 0 0 0 50%; background: #102021; }
+.opponent-camera-wrap video { width: 100%; height: 100%; object-fit: contain; }
+#opponent-camera-status { position: absolute; bottom: 4px; left: 8px; right: 8px; margin: 0; padding: 4px; background: #102321b8; font-size: 12px; text-align: center; }
+.battle-layout .camera-feedback,.battle-layout .live-overlay { max-width: 48%; }
+.battle-layout .camera-toolbar { left: 8px; right: auto; top: 5px; }.battle-layout #camera-status { display: none; }
+.battle-layout #mp-hud { top: 36px; left: 0; right: 0; column-gap: 0; }.battle-layout #mp-hud > div { margin: 0 6px; }
+.battle-layout #mp-hud > p { padding-left: 8px; }.battle-layout #mp-battle-exit { position: fixed; top: 5px; right: 8px; }
+.battle-layout .sequence-panel { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.battle-layout .sequence-panel > .signs { width: 100%; padding-inline: 5px; gap: 6px; }
+#opponent-sequence { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid #8a9a7666; align-items: center; justify-content: center; }
+#opponent-sequence .signs { width: 100%; flex: 1; min-height: 0; gap: 6px; padding: 2px 5px; }
+#opponent-jutsu-name,#opponent-weave-label { max-width: 95%; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: 12px; line-height: 16px; }
+.battle-layout .sign-card { width: min(12vw,13vh); }.battle-layout .sign-image { height: min(10vh,12vw); }.battle-layout .sign-meta strong { font-size: clamp(10px,1.8vmin,14px); }
+.battle-layout .arena-toolbar .character-options,.battle-layout .arena-caption,.battle-layout .sprite-space { display: none; }.battle-layout .arena-toolbar { justify-content: flex-end; }
+.battle-stage { position: absolute; inset: 0; overflow: hidden; --fighter-size: min(38vw,37vh); }
+.fighter { position: absolute; bottom: 4%; width: var(--fighter-size); height: var(--fighter-size); background-size: 300% 200%; background-repeat: no-repeat; image-rendering: auto; will-change: transform,background-position; }
+.fighter-sasuke { left: 5%; background-image: url('./assets/sasuke-sheet.png'); }.fighter-naruto { right: 5%; background-image: url('./assets/naruto-sheet.png'); }
+.fighter-label { position: absolute; top: 15%; font-size: 14px; font-weight: bold; color: #ffe1a1; text-shadow: 0 1px 3px black; }.sasuke-label { left: 6%; }.naruto-label { right: 6%; }
+.battle-layout .arena-footer { bottom: 2px; pointer-events: none; }.battle-layout .arena-footer #sound-status { display:none; }
+@media(max-height:500px) { .battle-layout #mp-hud { top: 32px; }.battle-layout #mp-hud > div { font-size: 11px; padding: 2px 5px; }.battle-layout #mp-hud > p { font-size: 11px; }#opponent-camera-status { font-size: 10px; }.fighter-label { top: 8%; font-size: 12px; }.camera-share-option { margin: 4px 0 !important; }.camera-share-note { margin: 3px 0 !important; } }

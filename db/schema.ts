@@ -26,4 +26,8 @@ export const multiplayerRooms = sqliteTable('multiplayer_rooms', {
   startsAt: integer('starts_at'),
   createdAt: integer('created_at').notNull(),
   sequence: text('sequence').notNull(),
+  hostSignal: text('host_signal'),
+  guestSignal: text('guest_signal'),
+  hostProgress: text('host_progress'),
+  guestProgress: text('guest_progress'),
 }, table => [index('multiplayer_queue').on(table.kind, table.status, table.createdAt)]);

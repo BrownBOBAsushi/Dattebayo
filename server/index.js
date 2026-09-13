@@ -10,7 +10,7 @@ export default {
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     try {
       const db = database(env);
-      if (url.pathname.startsWith('/api/multiplayer/')) return multiplayer(request, db);
+      if (url.pathname.startsWith('/api/multiplayer/')) return multiplayer(request, db, env);
       if (request.method === 'GET' && url.pathname === '/api/leaderboard') {
         const page = Math.min(999, Math.max(0, Number(url.searchParams.get('page')) || 0)) | 0;
         const { results } = await db.prepare('SELECT name, survived_ms, jutsus FROM survival_runs WHERE completed_at IS NOT NULL ORDER BY survived_ms DESC, jutsus DESC, completed_at ASC, id ASC LIMIT 6 OFFSET ?').bind(page * 5).all();

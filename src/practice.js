@@ -1,4 +1,6 @@
-import { matchRoom, matchScore, matchCanPlay, matchJutsu, readyMatch, reportAttack, matchMessage } from './multiplayer.js';
+import { BattleSprites } from './battle-sprites.js';
+import { startPeerCamera, stopPeerCamera } from './peer-camera.js';
+import { matchRoom, matchScore, localMatchScore, matchCanPlay, matchJutsu, readyMatch, reportAttack, matchMessage, shareWeave } from './multiplayer.js';
 import { startRankedRun, showRunResult } from './leaderboard.js';
 import { createSurvival, remainingTime, recordSurvivalSign, randomJutsu } from './survival-core.js';
 import { GameAudio } from './game-audio.js';
@@ -9,6 +11,11 @@ import { cameraReady, confirmSign, createBattle, pauseBattle, replayBattle, reso
 import { createBattlePresentation, renderBattleHp } from './battle-presentation.js';
 import { createMultiplayerVfx } from './multiplayer-vfx.js';
 const $ = id => document.getElementById(id);
+const battleSprites = new BattleSprites($('battle-stage'));
+let opponentAttacks = 0;
+let opponentJutsu = null;
+let opponentProgress = -1;
+let battleResultTimer;
 const catalogResponse = await fetch('./data/jutsus.json');
 if (!catalogResponse.ok) throw new Error('Could not load the jutsu catalog.');
 const catalog = await catalogResponse.json();
@@ -35,6 +42,9 @@ let busy = false;
 let cameraWanted = false;
 let selectionRevision = 0;
 let mode = 'practice';
+let multiplayerAcknowledgedScore = 0;
+let multiplayerCastByIndex = new Map();
+let multiplayerLatestCast = null;
 let survival = null;
 let clockHandle;
 let battleState = createBattle({ jutsuIds: Object.keys(JUTSU) });
@@ -46,6 +56,26 @@ const multiplayerVfx = createMultiplayerVfx($('arena'), {
   reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
 });
 document.querySelectorAll('.fireball-frame').forEach(frame => { if (frame.decode) frame.decode().catch(() => {}); });
+function resetMultiplayerCastTracking() {
+  multiplayerAcknowledgedScore = 0;
+  multiplayerCastByIndex.clear();
+  multiplayerLatestCast = null;
+}
+function trackMultiplayerCast(element, index) {
+  const cast = { element, index };
+  multiplayerCastByIndex.set(index, cast);
+  multiplayerLatestCast = cast;
+}
+function acknowledgeMultiplayerCasts(score) {
+  const acknowledged = Math.max(0, Number(score) || 0);
+  if (acknowledged <= multiplayerAcknowledgedScore) return;
+  for (let index = multiplayerAcknowledgedScore + 1; index <= acknowledged; index++) {
+    const cast = multiplayerCastByIndex.get(index);
+    multiplayerCastByIndex.delete(index);
+    if (cast === multiplayerLatestCast && cast.element === 'fireball') multiplayerVfx.impact();
+  }
+  multiplayerAcknowledgedScore = acknowledged;
+}
 function chooseRandomJutsu() {
   $('jutsu').value = randomJutsu(Object.keys(JUTSU), $('jutsu').value);
   $('survival-jutsu').textContent = `${selected().style} · ${selected().name}`;
@@ -236,6 +266,14 @@ async function castJutsu() {
     multiplayerVfx.cast(completedJutsu.element);
     sound.complete(completedJutsu.voice).catch(() => {});
     reportAttack();
+    trackMultiplayerCast(completedJutsu.element, localMatchScore());
+    battleSprites.attack(character);
+    total = localMatchScore();
+    $('completed-count').textContent = `${total} attacks woven`;
+    $('jutsu').value = matchJutsu();
+    renderSigns();
+    resetPractice({ preserveAudio: true });
+    shareWeave(0, null);
     return;
   }
   if (mode === 'survival') {
@@ -260,6 +298,7 @@ function acceptPrediction(label, score, now, revision = selectionRevision) {
   if (mode === 'multiplayer') multiplayerVfx.prepare(selected().element, state.hold.progress || 0);
   const oldIndex = state.index;
   state = detectSign(state,{label,score,now},selected().signs);
+  if (mode === 'multiplayer') shareWeave(state.index, label || null);
   updateSigns();
   let singleDamage = null;
   if (state.index !== oldIndex) {
@@ -267,7 +306,7 @@ function acceptPrediction(label, score, now, revision = selectionRevision) {
       if (!recordSurvivalSign(survival, performance.now())) { endSurvival('Time’s up!'); return; }
       paintClock();
     }
-    if (mode === 'survival' && state.completed) sound.cancel();
+    if ((mode === 'survival' || mode === 'multiplayer') && state.completed) sound.cancel();
     if (mode === 'single') {
       const previousBattle = battleState;
       battleState = confirmSign(previousBattle, { generation: previousBattle.generation, now: performance.now() });
@@ -350,6 +389,7 @@ async function startCamera() {
       beginSurvival(rankedId);
     }
     if (mode === 'multiplayer') {
+      startPeerCamera(stream);
       await readyMatch();
       if (current !== generation) return;
       clearInterval(clockHandle);
@@ -383,7 +423,9 @@ function stopCamera({ preserveBattleFeedback = false } = {}) {
   if (mode === 'single' && !preserveBattleFeedback) { presentation.stop(); presentation.clear(); }
   if (!preserveBattleFeedback) { clearTimeout(battleCalloutTimer); $('single-callout').classList.remove('show'); }
   if (mode === 'multiplayer') multiplayerVfx.cancel();
+  if (mode === 'multiplayer') resetMultiplayerCastTracking();
   cameraWanted = false;
+  if (mode === 'multiplayer') stopPeerCamera();
   generation++;
   cancelAnimationFrame(frameHandle);
   stream?.getTracks().forEach(t => t.stop());
@@ -426,6 +468,8 @@ function route() {
   stopCamera();
   multiplayerVfx.cancel();
   clearInterval(clockHandle);
+  clearTimeout(battleResultTimer);
+  resetMultiplayerCastTracking();
   survival = null;
   const playing = ['#practice', '#survival', '#single-player', '#battle'].includes(location.hash);
   mode = location.hash === '#battle' ? 'multiplayer' : location.hash === '#survival' ? 'survival' : location.hash === '#single-player' ? 'single' : 'practice';
@@ -435,6 +479,9 @@ function route() {
   }
   $('home').hidden = playing || location.hash.startsWith('#multiplayer');
   $('mp-hud').hidden = mode !== 'multiplayer';
+  $('practice').classList.toggle('battle-layout', mode === 'multiplayer');
+  $('opponent-camera-wrap').hidden = $('opponent-sequence').hidden = $('battle-stage').hidden = mode !== 'multiplayer';
+  if (mode !== 'multiplayer') battleSprites.stop();
   $('practice').hidden = !playing;
   $('practice').classList.toggle('single-mode', mode === 'single');
   $('practice').classList.toggle('multiplayer-mode', mode === 'multiplayer');
@@ -456,7 +503,15 @@ function route() {
   if (mode === 'survival') chooseRandomJutsu();
   if (mode === 'multiplayer') {
     if (!matchRoom()) { location.hash = '#multiplayer'; return; }
-    total = matchScore();
+    total = localMatchScore();
+    multiplayerAcknowledgedScore = matchScore();
+    setCharacter(matchRoom().role === 'host' ? 'sasuke' : 'naruto');
+    $('sasuke-player-label').textContent = `Sasuke · ${matchRoom().role === 'host' ? 'You' : 'Opponent'}`;
+    $('naruto-player-label').textContent = `Naruto · ${matchRoom().role === 'guest' ? 'You' : 'Opponent'}`;
+    opponentProgress = -1;
+    opponentAttacks = matchRoom().players[matchRoom().role === 'host' ? 1 : 0].score;
+    battleSprites.start();
+    renderOpponent();
     $('jutsu').value = matchJutsu();
     renderSigns();
   }
@@ -483,16 +538,48 @@ $('enable-camera').addEventListener('click',() => { if (mode === 'single' && ['v
 $('stop-camera').addEventListener('click',stopCamera);
 $('jutsu').addEventListener('change',() => { if (mode === 'practice') { resetPractice(); renderSigns(); } });
 document.querySelectorAll('[data-character]').forEach(b => b.addEventListener('click',() => setCharacter(b.dataset.character)));
+function renderOpponent(progress) {
+  const room = matchRoom();
+  if (!room) return;
+  const player = room.players[room.role === 'host' ? 1 : 0];
+  const weave = progress || player.progress || { index: 0, jutsuIndex: Math.min(player.score, 4), label: null };
+  if (!Number.isInteger(weave.index) || weave.index < 0 || weave.index > 3 || !Number.isInteger(weave.jutsuIndex) || weave.jutsuIndex < 0 || weave.jutsuIndex > 4) return;
+  const progressNumber = weave.jutsuIndex * 3 + weave.index;
+  if (progressNumber < opponentProgress) return;
+  opponentProgress = progressNumber;
+  const jutsu = JUTSU[room.sequence[weave.jutsuIndex]];
+  if (!jutsu) return;
+  if (opponentJutsu !== jutsu) {
+    opponentJutsu = jutsu;
+    $('opponent-jutsu-name').textContent = jutsu.name;
+    $('opponent-signs').replaceChildren(...jutsu.signs.map(sign => {
+      const li = document.createElement('li'); li.className = 'sign-card';
+      li.innerHTML = `<div class="sign-image"><img src="${ASSETS}art/seals/${FILES[sign]}" alt="${sign} hand sign"></div><div class="sign-meta"><strong>${sign}</strong></div>`;
+      return li;
+    }));
+  }
+  [...$('opponent-signs').children].forEach((card,i) => {card.classList.toggle('done',i<weave.index);card.classList.toggle('active',i===weave.index);});
+  $('opponent-weave-label').textContent = FILES[weave.label] ? `Weaving: ${weave.label}` : `${weave.index} / 3 signs`;
+}
+window.addEventListener('multiplayer:remote-weave', event => { if (mode === 'multiplayer') renderOpponent(event.detail); });
 window.addEventListener('multiplayer:update', () => {
   if (mode !== 'multiplayer') return;
-  if (['finished','closed'].includes(matchRoom()?.status)) { clearInterval(clockHandle); multiplayerVfx.cancel(); stopCamera(); return; }
-  if (matchScore() > total) {
-    multiplayerVfx.impact();
-    total = matchScore();
-    $('completed-count').textContent = `${total} attacks landed`;
-    $('jutsu').value = matchJutsu();
-    renderSigns();
-    resetPractice({ preserveAudio: true });
+  const player = matchRoom()?.players[matchRoom().role === 'host' ? 1 : 0];
+  if (player) {
+    for (; opponentAttacks < player.score; opponentAttacks++) battleSprites.attack(character === 'sasuke' ? 'naruto' : 'sasuke');
+    renderOpponent();
+  }
+  acknowledgeMultiplayerCasts(matchScore());
+  if (['finished','closed'].includes(matchRoom()?.status)) {
+    clearInterval(clockHandle); stopCamera();
+    clearTimeout(battleResultTimer);
+    battleResultTimer=setTimeout(()=>{if(mode==='multiplayer')$('mp-finish').hidden=false;},battleSprites.remainingMs()+100);
+    return;
+  }
+  // Acknowledgements never reset an already-started local sequence.
+  if (localMatchScore() > total) {
+    total = localMatchScore();
+    $('jutsu').value = matchJutsu(); renderSigns(); resetPractice({ preserveAudio: true });
   }
 });
 window.addEventListener('hashchange',route);
