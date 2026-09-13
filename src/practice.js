@@ -436,7 +436,7 @@ function route() {
   clearInterval(clockHandle);clearTimeout(battleResultTimer);
   survival = null;
   const playing = ['#practice', '#survival', '#single-player', '#battle'].includes(location.hash);
-  mode = location.hash === '#battle' ? 'multiplayer' : location.hash === '#survival' ? 'survival' : location.hash === '#single-player' ? 'single' : 'practice';
+  mode = location.hash === '#battle' ? 'multiplayer' : ['#single-player', '#survival'].includes(location.hash) ? 'survival' : 'practice';
   if (mode === 'single') {
     battleState = createBattle({ jutsuIds: Object.keys(JUTSU) });
     stopBattleClock();
@@ -452,8 +452,8 @@ function route() {
   const soundToggle = $('sound-toggle');
   if (mode === 'single') $('single-sound-slot').append(soundToggle);
   else document.querySelector('.arena-toolbar').append(soundToggle);
-  $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode');
-  $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Survival Mode' : mode === 'single' ? 'Single Player' : 'Practice Mode';
+  $('practice').setAttribute('aria-label', mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode');
+  $('camera-placeholder').querySelector('strong').textContent = mode === 'multiplayer' ? 'Ninja Duel' : mode === 'survival' ? 'Single Player' : mode === 'single' ? 'Single Player' : 'Practice Mode';
   $('survival-result').hidden = true;
   $('single-result').hidden = true;
   $('survival-timer').hidden = mode !== 'survival';

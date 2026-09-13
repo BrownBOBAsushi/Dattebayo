@@ -12,9 +12,8 @@
     <button id="music-toggle" class="quiet music-toggle" aria-pressed="false">Music pending audio</button>
     <div class="home-title"><p>NINJA ACADEMY</p><h1 id="home-title">DATTE<span>BAYO!</span></h1><span class="home-subtitle">Choose your ninja way.</span></div>
     <nav class="mode-list" aria-label="Game modes">
-      <a href="#single-player" class="mode available"><strong>Single Player</strong><small>Health battle · 10s per jutsu</small></a>
+      <a href="#single-player" class="mode available"><strong>Single Player</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#multiplayer" class="mode available"><strong>Multi Player</strong><small>First to 5 attacks</small></a>
-      <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per jutsu</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
     </nav>
     <div class="home-footer"><button class="quiet" data-leaderboard>High scores</button> <button class="quiet" id="invite-open">Invite a ninja · QR</button></div>
@@ -72,7 +71,7 @@
 </main>
 <div id="mp-finish" hidden role="dialog" aria-modal="true" aria-labelledby="mp-finish-title"><div><h2 id="mp-finish-title"></h2><p id="mp-finish-detail"></p><button id="mp-again" class="primary">Back to lobby</button></div></div>
 <dialog id="leaderboard-dialog" class="game-dialog" aria-labelledby="leaderboard-title">
-  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Survival · High scores</h2>
+  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Single Player · High scores</h2>
   <p class="ranking-note">Longest survival wins. Jutsus break ties.</p><p id="leaderboard-status" role="status"></p>
   <table><thead><tr><th>#</th><th>Ninja</th><th>Survived</th><th>Jutsus</th></tr></thead><tbody id="leaderboard-rows"></tbody></table>
   <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
