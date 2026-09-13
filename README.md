@@ -68,3 +68,11 @@ Every correct sign triggers a weave sound. Completing three signs triggers a bel
 ## Survival Mode
 
 Survival starts automatically when the camera is ready, with 30 seconds. Every correctly confirmed sign adds 2 seconds (including the third sign). The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.
+
+## Shared Survival leaderboard
+
+The public leaderboard uses the Sites D1 binding `DB`. Drizzle owns its schema (`db/schema.ts`); generate schema changes with `npx drizzle-kit generate`, then build and publish the generated `drizzle/` migrations with the site. The Worker serves `/api/runs`, `/api/scores`, and `/api/leaderboard`; static game files build to `dist/client`.
+
+A run gets a server-issued ID when the camera is ready. Only countdown completion enables name submission. Ranking uses survival duration, then jutsu count, then earliest submission. Each run can be saved once; safe retries do not duplicate it. Camera footage and landmarks remain in the browser. Names and results are public. This is a casual guest leaderboard: server timing checks and run IDs reduce invalid submissions, but browser-reported hand recognition is not cheat-proof. Competitive multiplayer will require server-authoritative match events, room lifecycle and abuse controls.
+
+The homepage's invite QR opens the public game URL. Multiplayer rooms and random matchmaking remain upcoming.

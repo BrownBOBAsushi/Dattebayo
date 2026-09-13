@@ -1,3 +1,4 @@
+import { startRankedRun, showRunResult } from './leaderboard.js';
 import { createSurvival, remainingTime, rewardWeave, randomJutsu } from './survival-core.js';
 import { GameAudio } from './game-audio.js';
 import './home-music.js';
@@ -44,8 +45,10 @@ function paintClock() {
   $('survival-timer').classList.toggle('urgent', remaining <= 5000);
   if (!remaining) endSurvival('Time’s up!');
 }
-function beginSurvival() {
+function beginSurvival(rankedId) {
   survival = createSurvival(performance.now());
+  survival.rankedId = rankedId;
+  survival.startedAt = performance.now();
   total = 0;
   $('completed-count').textContent = '0 jutsu performed';
   $('survival-result').hidden = true;
@@ -59,7 +62,10 @@ function endSurvival(reason) {
   clearInterval(clockHandle);
   stopCamera();
   $('survival-result-title').textContent = reason;
-  $('survival-score').textContent = `${survival.jutsus} jutsu completed · ${survival.signs} signs woven`;
+  const timedOut = reason === 'Time’s up!';
+  const survivedMs = timedOut ? 30000 + survival.signs * 2000 : Math.max(0, performance.now() - survival.startedAt);
+  $('survival-score').textContent = `${(survivedMs / 1000).toFixed(1)}s survived · ${survival.jutsus} jutsu completed`;
+  showRunResult(survival, timedOut);
   $('survival-result').hidden = false;
   $('survival-retry').focus();
 }
@@ -223,7 +229,11 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
-    if (mode === 'survival' && !survival) beginSurvival();
+    if (mode === 'survival' && !survival) {
+      const rankedId = await startRankedRun();
+      if (current !== generation) return;
+      beginSurvival(rankedId);
+    }
     resetPractice();
     acquired.getVideoTracks()[0].addEventListener('ended', () => { if(stream === acquired) stopCamera(); });
     frameHandle = requestAnimationFrame(() => processFrame(current));

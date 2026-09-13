@@ -5,5 +5,10 @@
   "scripts": {
     "build": "node scripts/build-site.mjs",
     "test": "node --test"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "qrcode": "^1.5.4"
   }
 }

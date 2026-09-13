@@ -141,3 +141,17 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 #survival-result h2 { font-size: clamp(24px,6vmin,54px); color: #ffae56; }
 #survival-result p { font-size: 16px; }
 #survival-result .back { display: inline-block; margin-left: 10px; }
+.game-dialog { color: #fff6dc; background: #142321; border: 1px solid #a78445; border-radius: 12px; width: min(620px,94vw); max-height: 94dvh; padding: clamp(14px,3vmin,28px); overflow: hidden; }
+.game-dialog::backdrop { background: #061210e8; }
+.game-dialog h2 { color: #ffb35a; margin: 8px 65px 14px 0; font-size: clamp(18px,4vmin,28px); }
+.dialog-close { float: right; }
+.ranking-note, #leaderboard-status { font-size: 14px; margin: 8px 0; }
+.game-dialog table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+.game-dialog th, .game-dialog td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #ffffff20; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.game-dialog th:first-child { width: 9%; }.game-dialog th:nth-child(2) { width: 43%; }
+.board-pages { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: 16px; font-size: 14px; }
+.invite-dialog { text-align: center; }.invite-dialog img { display: block; width: min(260px,50vw,45dvh); margin: 12px auto; }.invite-dialog .primary { display: inline-block; }
+#score-form { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; margin: 20px auto; max-width: 500px; }
+#score-form label { flex-basis: 100%; }#player-name { min-width: 0; max-width: 60%; padding: 10px; border: 1px solid #ad8a47; border-radius: 5px; font: inherit; background: #fff8e9; color: #142321; }
+#score-status { max-width: 500px; }#survival-result .quiet { margin-right: 8px; }
+@media(max-height:500px) { .game-dialog th,.game-dialog td { padding-block: 4px; }.game-dialog h2 { margin-block: 3px; }.board-pages { margin-top: 6px; }#survival-result h2 { margin: 4px; }#score-form { margin: 8px auto; }#score-form label { flex-basis: auto; }#survival-result p { margin: 8px 0; } }

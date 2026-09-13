@@ -17,7 +17,7 @@
       <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per sign</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
     </nav>
-    <p class="home-footer">HIDDEN LEAF VILLAGE · TRAINING GROUNDS</p>
+    <div class="home-footer"><button class="quiet" data-leaderboard>High scores</button> <button class="quiet" id="invite-open">Invite a ninja · QR</button></div>
   </section>
   <section id="practice" class="practice" hidden aria-label="Practice Mode">
     <section class="camera-panel" aria-label="Your camera">
@@ -42,10 +42,17 @@
       </div>
     </section>
     <div id="survival-result" hidden role="dialog" aria-modal="true" aria-labelledby="survival-result-title">
-      <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
+      <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><form id="score-form" hidden><label for="player-name">Your ninja name</label><input id="player-name" name="name" maxlength="24" required autocomplete="nickname" placeholder="Enter your name"><button id="score-save" class="primary">Save score</button></form><p id="score-status" role="status"></p><button class="quiet" data-leaderboard>High scores</button><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
     </div>
   </section>
 </main>
+<dialog id="leaderboard-dialog" class="game-dialog" aria-labelledby="leaderboard-title">
+  <button class="quiet dialog-close" data-close>Close</button><h2 id="leaderboard-title">Survival · High scores</h2>
+  <p class="ranking-note">Longest survival wins. Jutsus break ties.</p><p id="leaderboard-status" role="status"></p>
+  <table><thead><tr><th>#</th><th>Ninja</th><th>Survived</th><th>Jutsus</th></tr></thead><tbody id="leaderboard-rows"></tbody></table>
+  <div class="board-pages"><button id="board-prev" class="quiet">Previous</button><span id="board-page"></span><button id="board-next" class="quiet">Next</button><button id="board-refresh" class="quiet">Refresh</button></div>
+</dialog>
+<dialog id="invite-dialog" class="game-dialog invite-dialog" aria-labelledby="invite-title"><button class="quiet dialog-close" data-close>Close</button><h2 id="invite-title">Enter the Ninja Academy</h2><img src="./assets/game-qr.svg" alt="QR code to open Dattebayo"><p>Scan to play on your phone.</p><a class="primary" href="./assets/game-qr.svg" download="dattebayo-qr.svg">Download QR</a></dialog>
 <script type="module" src="./src/practice.js"></script>
 </body>
 </html>
