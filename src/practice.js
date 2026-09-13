@@ -1,3 +1,4 @@
+import { createSurvival, remainingTime, rewardWeave, randomJutsu } from './survival-core.js';
 import { GameAudio } from './game-audio.js';
 import './home-music.js';
 import { buildTensor, classifyScores } from './probe-core.js';
@@ -28,6 +29,41 @@ let total = 0;
 let busy = false;
 let cameraWanted = false;
 let selectionRevision = 0;
+let mode = 'practice';
+let survival = null;
+let clockHandle;
+function chooseRandomJutsu() {
+  $('jutsu').value = randomJutsu(Object.keys(JUTSU), $('jutsu').value);
+  $('survival-jutsu').textContent = `${selected().style} · ${selected().name}`;
+  renderSigns();
+}
+function paintClock() {
+  if (!survival || survival.ended) return;
+  const remaining = remainingTime(survival, performance.now());
+  $('survival-timer').textContent = `${(remaining / 1000).toFixed(1)}s`;
+  $('survival-timer').classList.toggle('urgent', remaining <= 5000);
+  if (!remaining) endSurvival('Time’s up!');
+}
+function beginSurvival() {
+  survival = createSurvival(performance.now());
+  total = 0;
+  $('completed-count').textContent = '0 jutsu performed';
+  $('survival-result').hidden = true;
+  clearInterval(clockHandle);
+  clockHandle = setInterval(paintClock, 50);
+  paintClock();
+}
+function endSurvival(reason) {
+  if (!survival || survival.ended) return;
+  survival.ended = true;
+  clearInterval(clockHandle);
+  stopCamera();
+  $('survival-result-title').textContent = reason;
+  $('survival-score').textContent = `${survival.jutsus} jutsu completed · ${survival.signs} signs woven`;
+  $('survival-result').hidden = false;
+  $('survival-retry').focus();
+}
+
 const sound = new GameAudio(updateSoundUi);
 function updateSoundUi() {
   $('sound-toggle').textContent = sound.muted ? 'Sound off' : sound.ready ? 'Sound on' : 'Enable sound';
@@ -71,10 +107,10 @@ function updateSigns() {
   });
   $('sequence-count').textContent = `${state.index} / 3 complete`;
 }
-function resetPractice() {
+function resetPractice({ preserveAudio = false } = {}) {
   selectionRevision++;
-  sound.cancel();
-  running = Boolean(stream);
+  if (!preserveAudio) sound.cancel();
+  running = Boolean(stream) && (mode !== 'survival' || Boolean(survival && !survival.ended));
   state = newPractice();
   clearTimeout(animationTimer);
   $('arena').classList.remove('casting','fireball','earth','water','clone','lightning','wind');
@@ -91,7 +127,7 @@ function setCharacter(name) {
   $('sprite').alt = `${NAMES[name]} in a ready stance`;
   $('character-name').textContent = NAMES[name].toUpperCase();
   document.querySelectorAll('[data-character]').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.character === name)));
-  resetPractice();
+  if (mode !== 'survival') resetPractice();
 }
 async function castJutsu() {
   const revision = selectionRevision;
@@ -104,6 +140,17 @@ async function castJutsu() {
   $('action-hint').textContent = `${NAMES[character]} releases the jutsu.`;
   $('arena').classList.add('casting');
   $('arena').classList.add(selected().element);
+  if (mode === 'survival') {
+    survival.jutsus++;
+    const completedJutsu = selected();
+    sound.complete(completedJutsu.voice).catch(() => {});
+    chooseRandomJutsu();
+    resetPractice({ preserveAudio: true });
+    $('arena').classList.add('casting', completedJutsu.element);
+    $('action-label').textContent = `${completedJutsu.name}!`;
+    animationTimer = setTimeout(() => $('arena').classList.remove('casting'), 1700);
+    return;
+  }
   const outcome = await sound.complete(selected().voice);
   if (revision !== selectionRevision) return;
   if (outcome.missing) $('sound-status').textContent = selected().voice ? 'Callout unavailable. Try again.' : selected().speaker;
@@ -112,10 +159,18 @@ async function castJutsu() {
 }
 function acceptPrediction(label, score, now, revision) {
   if (!running || revision !== selectionRevision) return;
+  if (mode === 'survival' && (!survival || survival.ended || remainingTime(survival, performance.now()) === 0)) { endSurvival('Time’s up!'); return; }
   const oldIndex = state.index;
   state = detectSign(state,{label,score,now},selected().signs);
   updateSigns();
-  if (state.index !== oldIndex) sound.weave();
+  if (state.index !== oldIndex) {
+    if (mode === 'survival') {
+      if (!rewardWeave(survival, performance.now())) { endSurvival('Time’s up!'); return; }
+      paintClock();
+    }
+    if (mode === 'survival' && state.completed) sound.cancel();
+    sound.weave();
+  }
   if (state.completed) castJutsu();
   else if (state.index !== oldIndex) $('instruction').textContent = `Good. Now hold ${selected().signs[state.index]}.`;
 }
@@ -168,6 +223,7 @@ async function startCamera() {
     $('live-overlay').hidden = false;
     $('camera-status').textContent = 'Camera live';
     $('camera-message').textContent = 'Keep both hands in frame. Camera processing stays in your browser.';
+    if (mode === 'survival' && !survival) beginSurvival();
     resetPractice();
     acquired.getVideoTracks()[0].addEventListener('ended', () => { if(stream === acquired) stopCamera(); });
     frameHandle = requestAnimationFrame(() => processFrame(current));
@@ -187,6 +243,7 @@ async function startCamera() {
   }
 }
 function stopCamera() {
+  if (mode === 'survival' && survival && !survival.ended) { endSurvival('Run ended'); return; }
   cameraWanted = false;
   generation++;
   cancelAnimationFrame(frameHandle);
@@ -227,16 +284,36 @@ async function processFrame(current) {
   if (current === generation && stream) frameHandle = requestAnimationFrame(() => processFrame(current));
 }
 function route() {
-  const practice = location.hash === '#practice';
-  $('home').hidden = practice;
-  $('practice').hidden = !practice;
-  if (!practice) stopCamera();
-  else { cameraWanted = true; startCamera(); }
+  stopCamera();
+  clearInterval(clockHandle);
+  survival = null;
+  const playing = ['#practice', '#survival'].includes(location.hash);
+  mode = location.hash === '#survival' ? 'survival' : 'practice';
+  $('home').hidden = playing;
+  $('practice').hidden = !playing;
+  $('practice').setAttribute('aria-label', mode === 'survival' ? 'Survival Mode' : 'Practice Mode');
+  $('camera-placeholder').querySelector('strong').textContent = mode === 'survival' ? 'Survival Mode' : 'Practice Mode';
+  $('survival-result').hidden = true;
+  $('survival-timer').hidden = mode !== 'survival';
+  $('survival-timer').textContent = '30.0s';
+  $('survival-jutsu').hidden = mode !== 'survival';
+  $('jutsu').closest('label').hidden = mode === 'survival';
+  $('jutsu').disabled = mode === 'survival';
+  if (mode === 'survival') chooseRandomJutsu();
+  if (playing) { cameraWanted = true; startCamera(); }
   window.scrollTo(0,0);
 }
+$('survival-retry').addEventListener('click', () => {
+  survival = null;
+  $('survival-result').hidden = true;
+  $('survival-timer').textContent = '30.0s';
+  chooseRandomJutsu();
+  cameraWanted = true;
+  startCamera();
+});
 $('enable-camera').addEventListener('click',() => { cameraWanted = true; startCamera(); });
 $('stop-camera').addEventListener('click',stopCamera);
-$('jutsu').addEventListener('change',() => { resetPractice(); renderSigns(); });
+$('jutsu').addEventListener('change',() => { if (mode !== 'survival') { resetPractice(); renderSigns(); } });
 document.querySelectorAll('[data-character]').forEach(b => b.addEventListener('click',() => setCharacter(b.dataset.character)));
 window.addEventListener('hashchange',route);
 window.addEventListener('pagehide',stopCamera);

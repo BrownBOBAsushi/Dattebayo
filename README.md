@@ -1,10 +1,10 @@
 # Dattebayo
 
-The homepage offers four modes. Practice Mode is playable; Single Player, Multi Player, and Survival Mode are marked coming soon.
+The homepage offers four modes. Practice Mode and Survival Mode are playable; Single Player and Multi Player are marked coming soon.
 
 ## Practice Mode
 
-Open the homepage and choose Practice Mode. Choose a jutsu and Naruto or Sasuke, allow camera access when prompted. The camera and recognition start automatically upon entering Practice Mode. Hold each highlighted sign for 450 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit and automatically starts a fresh sequence after each jutsu animation and callout. The combinations are abbreviated training versions, not full canonical sequences.
+Open the homepage and choose Practice Mode. Choose a jutsu and Naruto or Sasuke, allow camera access when prompted. The camera and recognition start automatically upon entering Practice Mode. Hold each highlighted sign for 300 ms at sufficient confidence. Complete all three signs to trigger a short character lunge and jutsu glow. Practice has no time limit and automatically starts a fresh sequence after each jutsu animation and callout. The combinations are abbreviated training versions, not full canonical sequences.
 
 Changing a jutsu or character resets the current sequence. Leaving practice, hiding the tab, or stopping the camera stops its tracks and resets the sequence. No camera frames are recorded or uploaded.
 
@@ -64,3 +64,7 @@ The game uses an invisible HTML audio element, with no YouTube player. Set `home
 ## Practice audio
 
 Every correct sign triggers a weave sound. Completing three signs triggers a bell, then the configured completion clip. Null clips skip the callout while retaining both game cues. Changes of jutsu, character, or mode cancel pending playback. Historical source credits for existing files remain in `assets/audio/SOURCES.md`.
+
+## Survival Mode
+
+Survival starts automatically when the camera is ready, with 30 seconds. Every correctly confirmed sign adds 2 seconds (including the third sign). The next jutsu is chosen randomly without an immediate repeat. Signs confirm after 300 ms in both game modes. The clock keeps running during callouts; a new sequence appears immediately so weaving can continue. Completing another jutsu replaces any still-playing callout. At zero the run ends and stops the camera; Try again starts a new 30-second run. Stopping the camera or hiding the tab ends the current run.

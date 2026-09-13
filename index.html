@@ -14,7 +14,7 @@
     <nav class="mode-list" aria-label="Game modes">
       <button class="mode" disabled><strong>Single Player</strong><small>Coming soon</small></button>
       <button class="mode" disabled><strong>Multi Player</strong><small>Coming soon</small></button>
-      <button class="mode" disabled><strong>Survival Mode</strong><small>Coming soon</small></button>
+      <a href="#survival" class="mode available"><strong>Survival Mode</strong><small>30 seconds · +2s per sign</small></a>
       <a href="#practice" class="mode available"><strong>Practice Mode</strong><span aria-hidden="true">→</span></a>
     </nav>
     <p class="home-footer">HIDDEN LEAF VILLAGE · TRAINING GROUNDS</p>
@@ -25,7 +25,7 @@
         <video id="camera" autoplay muted playsinline aria-label="Your camera, mirrored"></video>
         <div id="camera-placeholder"><strong>Practice Mode</strong><p>Keep both hands in view.</p><button id="enable-camera" class="primary">Retry camera</button></div>
       </div>
-      <div class="camera-toolbar"><a href="#home" class="back">← Home</a><span id="camera-status">Camera off</span><label class="jutsu-picker"><span class="sr-only">Select jutsu</span><select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label></div>
+      <div class="camera-toolbar"><a href="#home" class="back">← Home</a><span id="camera-status">Camera off</span><span id="survival-timer" hidden aria-label="Time remaining">30.0s</span><label class="jutsu-picker"><span class="sr-only">Select jutsu</span><select id="jutsu"><option value="chidori">Chidori</option><option value="fireball">Fireball Jutsu</option></select></label><span id="survival-jutsu" hidden></span></div>
       <div class="camera-feedback"><p id="camera-message" role="status">Camera stays in your browser. Nothing is recorded.</p><p id="error" class="error" role="alert" hidden></p></div>
       <div class="live-overlay" hidden id="live-overlay"><span id="prediction">Show a hand sign</span><button id="stop-camera" class="quiet">Stop camera</button></div>
     </section>
@@ -41,6 +41,9 @@
         <div class="arena-footer"><p id="instruction" role="status">Starting your camera…</p><span id="sound-status" role="status"></span><span id="completed-count">0 jutsu performed</span></div>
       </div>
     </section>
+    <div id="survival-result" hidden role="dialog" aria-modal="true" aria-labelledby="survival-result-title">
+      <div><h2 id="survival-result-title">Time’s up!</h2><p id="survival-score"></p><button id="survival-retry" class="primary">Try again</button><a href="#home" class="back">Home</a></div>
+    </div>
   </section>
 </main>
 <script type="module" src="./src/practice.js"></script>

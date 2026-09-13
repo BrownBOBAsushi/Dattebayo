@@ -133,3 +133,11 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 .casting.clone .jutsu-effect { background: radial-gradient(circle,#fff,#ddd9 35%,transparent 70%); }
 
 .casting.wind .jutsu-effect { background: radial-gradient(circle,#f0fff7,#80e6ae99 35%,transparent 70%); }
+#survival-timer { color: #ffdd82; background: #102020ee; padding: 6px 10px; border: 1px solid #d6b465; border-radius: 4px; font-size: clamp(16px,3vmin,26px); font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#survival-timer.urgent { color: #ff8c76; border-color: #ff8c76; }
+#survival-jutsu { margin-left: auto; max-width: 48%; font-size: clamp(12px,2vmin,16px); padding: 6px 10px; background: #142223ec; border-radius: 4px; }
+#survival-result { position: absolute; z-index: 20; inset: 0; display: grid; place-items: center; background: #091513e8; padding: 20px; }
+#survival-result > div { text-align: center; max-width: 100%; }
+#survival-result h2 { font-size: clamp(24px,6vmin,54px); color: #ffae56; }
+#survival-result p { font-size: 16px; }
+#survival-result .back { display: inline-block; margin-left: 10px; }

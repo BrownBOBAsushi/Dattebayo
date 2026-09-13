@@ -13,9 +13,9 @@ test('requires continuous correct holds in order and completes only after all th
   let time = 500;
   for (const [i,sign] of signs.entries()) {
     state = read(state,sign,time);
-    state = read(state,sign,time+449);
+    state = read(state,sign,time+299);
     assert.equal(state.index,i);
-    state = read(state,sign,time+450);
+    state = read(state,sign,time+300);
     assert.equal(state.index,i+1);
     assert.equal(state.completed,i===2);
     time += 500;
