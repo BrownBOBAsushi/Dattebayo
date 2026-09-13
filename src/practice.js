@@ -55,7 +55,7 @@ const presentation = createBattlePresentation($('single-arena'), () => battleSta
 const multiplayerVfx = createMultiplayerVfx($('arena'), {
   reducedMotion: () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
 });
-document.querySelectorAll('.fireball-frame').forEach(frame => { if (frame.decode) frame.decode().catch(() => {}); });
+document.querySelectorAll('.fireball-frame, .lightning-frame').forEach(frame => { if (frame.decode) frame.decode().catch(() => {}); });
 function resetMultiplayerCastTracking() {
   multiplayerAcknowledgedScore = 0;
   multiplayerCastByIndex.clear();
@@ -72,7 +72,7 @@ function acknowledgeMultiplayerCasts(score) {
   for (let index = multiplayerAcknowledgedScore + 1; index <= acknowledged; index++) {
     const cast = multiplayerCastByIndex.get(index);
     multiplayerCastByIndex.delete(index);
-    if (cast === multiplayerLatestCast && cast.element === 'fireball') multiplayerVfx.impact();
+    if (cast === multiplayerLatestCast && (cast.element === 'fireball' || cast.element === 'lightning')) multiplayerVfx.impact();
   }
   multiplayerAcknowledgedScore = acknowledged;
 }

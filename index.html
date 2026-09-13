@@ -4,6 +4,10 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#192323"><title>Dattebayo · Ninja Academy</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="preload" as="image" href="./assets/effects/fireball-frame.png">
+  <link rel="preload" as="image" href="./assets/effects/fireball-frame-02.png">
+  <link rel="preload" as="image" href="./assets/effects/lightning-frame.png">
+  <link rel="preload" as="image" href="./assets/effects/lightning-frame-02.png">
 </head>
 <body>
 <main class="game-screen">
@@ -63,6 +67,13 @@
           <img class="fireball-frame fireball-frame-a" src="./assets/effects/fireball-frame.png" alt="">
           <img class="fireball-frame fireball-frame-b" src="./assets/effects/fireball-frame-02.png" alt="">
           <span class="fireball-flare"></span>
+        </div>
+        <div id="lightning-vfx" class="lightning-vfx" aria-hidden="true">
+          <span class="lightning-corona"></span>
+          <span class="lightning-filaments"></span>
+          <img class="lightning-frame lightning-frame-a" src="./assets/effects/lightning-frame.png" alt="">
+          <img class="lightning-frame lightning-frame-b" src="./assets/effects/lightning-frame-02.png" alt="">
+          <span class="lightning-bloom"></span>
         </div>
         <div id="battle-stage" class="battle-stage" hidden aria-label="Sasuke on the left and Naruto on the right"><span id="sasuke-player-label" class="fighter-label sasuke-label"></span><span id="naruto-player-label" class="fighter-label naruto-label"></span><div class="fighter fighter-sasuke" data-fighter="sasuke" role="img" aria-label="Sasuke attack animation"></div><div class="fighter fighter-naruto" data-fighter="naruto" role="img" aria-label="Naruto attack animation"></div></div>
         <div class="sprite-space"><img id="sprite" alt="Sasuke in a ready stance"><div id="jutsu-effect" class="jutsu-effect" aria-hidden="true"></div></div>

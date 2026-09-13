@@ -1,20 +1,23 @@
 const CAST_MS = 1450;
 const IMPACT_MS = 640;
 const FADE_MS = 280;
-const FIREBALL_CLASSES = [
-  'fireball-ready',
-  'fireball-cast',
-  'fireball-impact',
-  'fireball-fade',
-  'fireball-flicker',
-  'fireball-rising',
-  'fireball-reduced',
-];
 
-const isFireball = element => element === 'fireball';
+const EFFECTS = {
+  fireball: {
+    classes: ['fireball-ready', 'fireball-cast', 'fireball-impact', 'fireball-fade', 'fireball-flicker', 'fireball-rising', 'fireball-reduced'],
+    progress: '--fireball-progress',
+  },
+  lightning: {
+    classes: ['lightning-ready', 'lightning-cast', 'lightning-impact', 'lightning-fade', 'lightning-flicker', 'lightning-rising', 'lightning-reduced'],
+    progress: '--lightning-progress',
+  },
+};
+
+const effectFor = element => element === true ? EFFECTS.fireball : EFFECTS[element];
+const effectName = effect => Object.keys(EFFECTS).find(name => EFFECTS[name] === effect);
 
 /**
- * Owns multiplayer Fireball visuals separately from practice input state.
+ * Owns multiplayer impact visuals separately from practice input state.
  * The injected clock keeps the timing behavior deterministic in unit tests.
  */
 export function createMultiplayerVfx(root, {
@@ -24,11 +27,13 @@ export function createMultiplayerVfx(root, {
 } = {}) {
   if (!root?.classList) throw new TypeError('A class-list root is required.');
   let generation = 0;
-  let pendingFireball = false;
+  let pendingEffect = null;
+  let activeVisual = null;
   const timers = new Set();
 
   const prefersReducedMotion = () => typeof reducedMotion === 'function' ? reducedMotion() : reducedMotion;
   const removeClasses = (...names) => root.classList.remove(...names);
+  const allClasses = Object.values(EFFECTS).flatMap(effect => effect.classes);
   const clearTimers = () => {
     for (const timer of timers) cancelTimer(timer);
     timers.clear();
@@ -43,59 +48,108 @@ export function createMultiplayerVfx(root, {
   };
   const clearVisuals = () => {
     generation += 1;
-    pendingFireball = false;
+    pendingEffect = null;
+    activeVisual = null;
     clearTimers();
-    removeClasses(...FIREBALL_CLASSES);
-    root.style?.removeProperty?.('--fireball-progress');
+    removeClasses(...allClasses);
+    for (const effect of Object.values(EFFECTS)) root.style?.removeProperty?.(effect.progress);
   };
 
   function prepare(active, progress = 0) {
-    if (!isFireball(active) && active !== true) {
-      removeClasses('fireball-ready', 'fireball-rising');
+    // A newly selected jutsu can be prepared while an earlier multiplayer
+    // effect is still visible. Do not interrupt that effect or its timers.
+    if (activeVisual) return;
+    const effect = effectFor(active);
+    if (!effect) {
+      removeClasses(...allClasses.filter(name => name.endsWith('-ready') || name.endsWith('-rising')));
       return;
     }
-    const visible = Number(progress) > 0 && !pendingFireball;
-    root.classList.toggle('fireball-ready', visible);
-    root.classList.toggle('fireball-rising', visible && !prefersReducedMotion());
-    root.style?.setProperty?.('--fireball-progress', String(Math.max(0, Math.min(1, Number(progress) || 0))));
+    const name = effectName(effect);
+    const visible = Number(progress) > 0;
+    root.classList.toggle(`${name}-ready`, visible);
+    root.classList.toggle(`${name}-rising`, visible && !prefersReducedMotion());
+    root.style?.setProperty?.(effect.progress, String(Math.max(0, Math.min(1, Number(progress) || 0))));
   }
 
-  function finishFade(current) {
-    if (current !== generation) return;
-    removeClasses('fireball-fade');
+  function finishFade(current, record) {
+    if (current !== generation || activeVisual !== record) return;
+    const { name } = record;
+    removeClasses(`${name}-fade`);
+    record.fadeFinished = true;
+    if (record.impactFinished) {
+      removeClasses(`${name}-reduced`);
+      activeVisual = null;
+      if (pendingEffect === record) pendingEffect = null;
+      return;
+    }
+    if (record.impactActive) {
+      // The impact owns the record until its own timer completes. Keeping the
+      // active visual here prevents the later impact callback losing ownership.
+      return;
+    }
+    // The visible cast lifetime is complete, but keep the record for a late
+    // score acknowledgement. A later impact can safely revive its styling.
+    removeClasses(`${name}-cast`, `${name}-flicker`, `${name}-rising`, `${name}-reduced`);
+    record.expired = true;
+    activeVisual = null;
   }
 
-  function finishCast(current) {
-    if (current !== generation) return;
-    removeClasses('fireball-cast', 'fireball-flicker', 'fireball-rising', 'fireball-reduced');
-    root.classList.add('fireball-fade');
-    later(() => finishFade(current), FADE_MS);
+  function finishCast(current, record) {
+    if (current !== generation || activeVisual !== record) return;
+    const { name, reduced } = record;
+    record.castFinished = true;
+    removeClasses(`${name}-cast`, `${name}-flicker`, `${name}-rising`);
+    if (!reduced) removeClasses(`${name}-reduced`);
+    root.classList.add(`${name}-fade`);
+    later(() => finishFade(current, record), FADE_MS);
   }
 
-  function finishImpact(current) {
-    if (current !== generation) return;
-    removeClasses('fireball-impact');
+  function finishImpact(current, record) {
+    if (current !== generation || activeVisual !== record) return;
+    const { name, reduced } = record;
+    record.impactFinished = true;
+    removeClasses(`${name}-impact`);
+    if (!reduced) removeClasses(`${name}-fade`);
+    if (record.castFinished && record.fadeFinished) {
+      removeClasses(`${name}-reduced`);
+      activeVisual = null;
+      if (pendingEffect === record) pendingEffect = null;
+    }
   }
 
   function cast(element) {
     clearVisuals();
-    if (!isFireball(element)) return false;
+    const effect = effectFor(element);
+    if (!effect || element === true && effect !== EFFECTS.fireball) return false;
+    const name = effectName(effect);
+    const reduced = Boolean(prefersReducedMotion());
     const current = generation;
-    pendingFireball = true;
-    root.classList.add('fireball-cast');
-    if (prefersReducedMotion()) root.classList.add('fireball-reduced');
-    else root.classList.add('fireball-flicker');
-    later(() => finishCast(current), prefersReducedMotion() ? IMPACT_MS : CAST_MS);
+    const record = { name, reduced, castFinished: false, impactFinished: false, fadeFinished: false, expired: false };
+    activeVisual = record;
+    pendingEffect = record;
+    root.classList.add(`${name}-cast`);
+    if (reduced) root.classList.add(`${name}-reduced`);
+    else root.classList.add(`${name}-flicker`);
+    later(() => finishCast(current, record), CAST_MS);
     return true;
   }
 
   function impact() {
-    if (!pendingFireball) return false;
-    pendingFireball = false;
+    if (!pendingEffect) return false;
+    const record = pendingEffect;
+    const { name } = record;
+    pendingEffect = null;
+    record.impactActive = true;
+    if (record.expired) {
+      activeVisual = record;
+      record.castFinished = true;
+      record.fadeFinished = true;
+      if (record.reduced) root.classList.add(`${name}-reduced`);
+    }
+    removeClasses(`${name}-ready`, `${name}-rising`, `${name}-fade`);
+    root.classList.add(`${name}-impact`);
     const current = generation;
-    removeClasses('fireball-ready', 'fireball-rising', 'fireball-fade');
-    root.classList.add('fireball-impact');
-    later(() => finishImpact(current), IMPACT_MS);
+    later(() => finishImpact(current, record), IMPACT_MS);
     return true;
   }
 
@@ -104,6 +158,6 @@ export function createMultiplayerVfx(root, {
     cast,
     impact,
     cancel: clearVisuals,
-    isPending: () => pendingFireball,
+    isPending: () => Boolean(pendingEffect),
   };
 }
