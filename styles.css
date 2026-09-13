@@ -246,3 +246,11 @@ select { padding: 8px 12px; max-width: 40vw; font-size: 14px; }
 #intro-go { flex-shrink: 0; min-width: 180px; }
 
 #reconnect-video { position: absolute; z-index: 5; right: 6px; bottom: 36px; padding: 5px 8px; font-size: 11px; background: #102321dd; }
+
+#opponent-fallback { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse at center,#647170,#273332); overflow: hidden; }
+#opponent-fallback[hidden] { display: none; }
+.fallback-shinobi { width: min(30vw,24vh); height: min(30vw,24vh); background: url('./assets/naruto-sheet.png') 0 0 / 300% 200%; filter: saturate(.45); }
+#opponent-fallback strong { font-size: clamp(12px,2vh,22px); text-align: center; color: #fff3d7; text-shadow: 0 2px 8px #000; }
+#opponent-camera-status { z-index: 2; }
+#match-countdown { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #303637dc; color: #ffb455; font-size: clamp(64px,17vw,180px); font-weight: 900; text-shadow: 0 5px 0 #141e20; backdrop-filter: blur(5px); pointer-events: none; }
+#match-countdown[hidden] { display: none; }

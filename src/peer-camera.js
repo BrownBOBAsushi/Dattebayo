@@ -1,6 +1,7 @@
 import { matchRoom, matchRequest } from './multiplayer.js';
 let connection=null, channel=null, stream=null, loop=null, epoch=0, signalId=null, lastOffer=null, lastRestart=null, ignoredOffer=null, shared=false, reconnectTimer=null;
 const $=id=>document.getElementById(id);
+function fallback(show){$('opponent-fallback').hidden=!show;}
 function status(message){$('opponent-camera-status').textContent=message;}
 function gather(pc){return new Promise(resolve=>{
   if(pc.iceGatheringState==='complete')return resolve();
@@ -29,11 +30,14 @@ async function makeConnection(current){
     if(current!==epoch||connection!==pc)return;
     $('opponent-camera').srcObject=event.streams[0]||new MediaStream([event.track]);
     $('opponent-camera').play().catch(()=>status('Tap the opponent video to play it.'));
-    event.track.onunmute=()=>{if(connection===pc)status('Opponent camera live');};
+    event.track.onunmute=()=>{if(connection===pc){fallback(false);status('Opponent camera live');}};
+    event.track.onmute=()=>{if(connection===pc)fallback(true);};
+    event.track.onended=()=>{if(connection===pc)fallback(true);};
     status(event.track.muted?'Waiting for opponent video…':'Opponent camera live');
   };
   pc.onconnectionstatechange=()=>{
     if(current!==epoch||connection!==pc)return;
+    if(['failed','disconnected','closed'].includes(pc.connectionState))fallback(true);
     if(pc.connectionState==='failed')status('Video could not connect on this network. You can keep duelling.');
     if(pc.connectionState==='disconnected')status('Opponent video interrupted · reconnect if it does not return.');
     if(pc.connectionState==='connected'&&!$('opponent-camera').srcObject)status('Connected · opponent camera off');
@@ -44,7 +48,7 @@ async function makeConnection(current){
 }
 export function stopPeerCamera(){
   epoch++;clearTimeout(loop);clearTimeout(reconnectTimer);connection?.close();connection=null;channel=null;stream=null;signalId=null;lastOffer=null;lastRestart=null;ignoredOffer=null;
-  $('opponent-camera').srcObject=null;status('Waiting for opponent camera…');
+  fallback(true);$('opponent-camera').srcObject=null;status('Waiting for opponent camera…');
 }
 export async function startPeerCamera(localStream){
   stopPeerCamera();stream=localStream;shared=$('mp-share-camera').checked;
@@ -98,3 +102,7 @@ window.addEventListener('pagehide',stopPeerCamera);
 $('opponent-camera').addEventListener('click',()=>$('opponent-camera').play().catch(()=>{}));
 
 document.getElementById('reconnect-video').addEventListener('click',()=>{if(stream)startPeerCamera(stream);else status('Start your camera first, then reconnect video.');});
+
+$('opponent-camera').addEventListener('playing',()=>fallback(false));
+$('opponent-camera').addEventListener('waiting',()=>fallback(true));
+$('opponent-camera').addEventListener('error',()=>fallback(true));
