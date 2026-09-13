@@ -4,7 +4,7 @@ const music = new Audio();
 music.preload = 'auto';
 let configured = false;
 let enabled = true;
-const onHome = () => !['#practice', '#survival'].includes(location.hash) && !document.hidden;
+const onHome = () => !['#single-player', '#practice', '#survival'].includes(location.hash) && !document.hidden;
 function updateLabel() {
   button.disabled = !configured;
   button.textContent = !configured ? 'Music pending audio' : !enabled ? 'Music off' : music.paused ? 'Enable music' : 'Music on';
@@ -23,7 +23,7 @@ button.addEventListener('click', () => {
 });
 for (const event of ['pointerdown','keydown']) document.addEventListener(event, e => {
   if (e.target === button) return;
-  if (e.target?.closest?.('a[href="#practice"], a[href="#survival"]')) return;
+  if (e.target?.closest?.('a[href="#single-player"], a[href="#practice"], a[href="#survival"]')) return;
   if (enabled && music.paused) syncMusic();
 }, { capture: true });
 window.addEventListener('hashchange', syncMusic);

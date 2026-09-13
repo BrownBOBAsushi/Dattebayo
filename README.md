@@ -1,6 +1,20 @@
 # Dattebayo
 
-The homepage offers four modes. Practice Mode and Survival Mode are playable; Single Player and Multi Player are marked coming soon.
+The homepage offers four modes. Practice Mode, Survival Mode and Single Player are playable; Multi Player remains marked coming soon.
+
+## Single Player
+
+Open the homepage and choose Single Player. Sasuke is the player on the left and Naruto is the CPU on the right. Each fighter starts with 3 HP. The camera and recognition start together after camera access is ready; the 10-second jutsu window does not begin before then.
+
+Hold each highlighted seal for 300 ms at at least 0.6 confidence. Completing all three signs before the deadline deals exactly 1 damage to Naruto and immediately chooses a different jutsu. Missing the deadline deals exactly 1 damage to Sasuke and starts the next jutsu. The third hit wins or loses the battle. A stopped camera or hidden tab pauses the current clock and clears the partial sequence; use Retry camera to resume with the remaining time. Replay resets both health bars.
+
+The Single Player arena uses temporary procedural greybox art so the integration can be tested without presenting unfinished runtime sprites as final artwork. No camera frames are recorded or uploaded.
+
+### Integration handoff
+
+The implemented Sasuke/Naruto flow is the 3 HP battle with three continuous signs held for 300 ms, a 10-second window per jutsu, pause/resume handling, and no RPS layer. The main integration points are [`src/battle-core.js`](src/battle-core.js), [`src/battle-presentation.js`](src/battle-presentation.js), and [`src/practice.js`](src/practice.js).
+
+Edmund's pending follow-up is to preserve and reconcile the existing High scores, Invite a ninja, leaderboard/QR, Survival, and multiplayer work during the merge. Live publication and testing require the owning Sites workspace for this project; browser and real-camera testing and alignment with the upstream procedural-art prototype remain pending.
 
 ## Practice Mode
 
